@@ -1,13 +1,12 @@
 <?php
-
+	$con = mysqli_connect("localhost", "root", "p3rfecto", "f3");
 	if (isset($_GET["action"])) $action = $_GET["action"];
 	if (isset($_GET["page"])) $page = $_GET["page"];
 	if (isset($_GET["offset"])) $offset = $_GET["offset"];
 	if (isset($_GET["pageSize"])) $pageSize = $_GET["pageSize"];
 	if (isset($_GET["postId"])) $postId = $_GET["postId"];
-	if (isset($_POST["title"])) $title = $_POST["title"];
-	if (isset($_POST["content"])) $content = $_POST["content"];
-	$con = mysqli_connect("localhost", "root", "p3rfecto", "f3");
+	if (isset($_POST["title"])) $title = mysqli_real_escape_string($con, $_POST["title"]);
+	if (isset($_POST["content"])) $content = mysqli_real_escape_string($con, $_POST["content"]);
 	if (isset($action)) $action();
 	mysqli_close($con);
 
@@ -30,26 +29,23 @@
 		global $con, $title, $content;
 		$addPostQuery = "INSERT INTO posts (title, content) VALUES ('$title', '$content')";
 		mysqli_query($con, $addPostQuery);
-	}
-
-	function showEditPost() {
-		global $con, $postId;
-		$postsQuery = "SELECT content, date, title FROM posts WHERE id = $postId";
-		$postsResult = mysqli_query($con, $postsQuery);
-		$data[] = mysqli_fetch_assoc($postsResult);
 		header('Content-type: application/json');
-		echo json_encode($data);
+		echo json_encode("addPost complete");
 	}
 
 	function editPost() {
 		global $con, $postId, $title, $content;
 		$editPostQuery = "UPDATE posts SET title = '$title', content = '$content' WHERE id = $postId";
 		mysqli_query($con, $editPostQuery);
+		header('Content-type: application/json');
+		echo json_encode("editPost complete");
 	}
 
 	function deletePost() {
 		global $con, $postId;
 		$deletePostQuery= "DELETE FROM posts WHERE id = $postId";
 		mysqli_query($con, $deletePostQuery);
+		header('Content-type: application/json');
+		echo json_encode("deletePost complete");
 	}
 ?>
