@@ -1,5 +1,5 @@
 <script type="text/template" id="paginationTemplate">
-	<li data-id>
-		<a href="#" data-template="pagination" data-event="clickPagination"></a>
+	<li data-id={id}>
+		<a href="#" data-event="clickPagination">{pagination}</a>
 	</li>
 </script>

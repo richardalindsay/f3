@@ -1,8 +1,8 @@
 <script type="text/template" id="addPostTemplate">
-	<div id="addPost" data-id>
+	<div id="addPost" data-id={id}>
 		<form>
-			<input type="text" name="title" data-template="title"><br>
-			<textarea name="content" data-template="content"></textarea><br>
+			<input type="text" name="title" value="{title}"><br>
+			<textarea name="content">{content}</textarea><br>
 			<input type="submit" data-event>
 		</form>
 	</div>

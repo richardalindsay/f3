@@ -14,47 +14,39 @@
 				'clickPagination',
 				'renderEditPostPage',
 				'deletePost'
-			]
+			],
+			posts: {}
 		},
 
 		tools = {
 			init: function() {
-				$('body').on('click', '[data-event]', events.handler);
+				$('body').on('click', '[data-event]', events.handler);				 
 				blog.getBlog();
 			},
 
-			populateTemplate: function(args) {
-				var data = args.data,
-					el = args.el,
-					template = args.template,
-					$template =	$($(template)[0].innerHTML),
-					fragment = $('<div/>'),
-					$templateTmp,
-					$dataTemplateEl,
-					val;
-				if (data) {
-					$.each(data, function(i, row) {
-						$templateTmp = $template.clone();
-						$templateTmp.attr('data-id', row.id);
-						$templateTmp.find('[data-template]').each(function() {
-							$dataTemplateEl = $(this);
-							val = $dataTemplateEl.data('template');
-							if ($dataTemplateEl.is('input[type=text]')) {
-								$dataTemplateEl.val(row[val]);
-							} else if ($dataTemplateEl.is('textarea')) {
-								$dataTemplateEl.val(row[val].replace(/<br>/g, '\n'));
-							}
-							else {
-								$dataTemplateEl.html(row[val]);
-							}
-						});
-						fragment.append($templateTmp);
-					});
-				} else {
-					fragment.append($template);
-				}
-				$(el).append(fragment.children());
-			}
+			popTmpl: function(data, tmpl) {
+				var tmpl = $(tmpl).get(0).innerHTML,
+					$fragment = $('<div/>'),
+					tmplTmp,
+					row;
+				$.each(data, function(index, val) {
+					tmplTmp = tmpl;
+					row = $(tools.popTmplRow(tmplTmp, val));
+					$fragment.append(row);
+				});
+				return $fragment.children();
+			},
+
+			popTmplRow: function(tmplRow, data) {
+				$.each(data, function(index, val) {
+					if (tmplRow.match(new RegExp('<textarea.*>.*{' + index + '}.*<\/textarea>', 'g'))) {
+						val = val.replace(/<br>/g, '\n');
+					}
+					tmplRow = tmplRow.replace(new RegExp('{' + index + '}', 'g'), val);
+				});
+				return tmplRow;
+			},
+
 		},
 
 		events = {
@@ -73,35 +65,27 @@
 			},
 
 			renderAddPostPage: function(post) {
-				var type = (post) ? 'edit' : 'add' ;
-				tools.populateTemplate({
-					data : post,
-					el : 'body',
-					template : '#addPostTemplate'
-				});
+				var type = (post) ? 'edit' : 'add',
+					post = post || [{ id : '', title: '', content: ''}];
+				$('body').append(tools.popTmpl(post, '#addPostTemplate'));
 				$('#addPost input[type=submit]').val(type);
 				$('#addPost input[type=submit]').attr('data-event', type + 'Post');
 				document.title = 'f3 - ' + type.charAt(0).toUpperCase() + type.slice(1) + ' Post';
 				$('#blog').hide();
-				$('#addPost').show();
 			},
 
 			renderEditPostPage: function(event) {
-				var $post = $(event.target).closest('[data-id]'),
-					$dataTemplate = $post.find('[data-template]'),
-					id = $post.attr('data-id'),
-					tmpPost = { id: id },
-					post = [],
-					dataTemplateEl,
-					prop,
-					value;
-				$dataTemplate.each(function() {
-					$dataTemplateEl = $(this);
-					prop = $dataTemplateEl.data('template');
-					value = $dataTemplateEl.html();
-					tmpPost[prop] = value;
-				});
-				post.push(tmpPost);
+				var id = $(event.target).closest('[data-id]').data('id'),
+					posts = settings.posts,
+					post = [];
+				for (var i = 0, l = posts.length; i < l; i++) {
+					var tmpPostObj = posts[i],
+						postObj;
+					if (parseInt(tmpPostObj.id, 10) === id) {
+						postObj = posts[i];
+					}
+				}
+				post.push(postObj);
 				this.renderAddPostPage(post);
 			},
 
@@ -121,7 +105,7 @@
 				$.ajax({
 					type: 'post', 
 					url: addPostUrl,
-					data: ($('#addPost form').serialize().replace(/%0(D%0A|A|D)/g, '<br>').replace(/<pre>(.*?)<\/pre>/g, function(x) { return x.replace(/</g, '&lt;') }))
+					data: $('#addPost form').serialize().replace(/%0(D%0A|A|D)/g, '<br>')
 				}).done(function() {
 					blog.getBlog();
 				});
@@ -148,10 +132,10 @@
 			},
 
 			render: function(data) {
-				var rowCount = data.info.rowCount,
-					posts = data.posts;
+				var rowCount = data.info.rowCount;
+				settings.posts = data.posts;
 				this.renderPagination(rowCount);
-				this.renderPosts(posts);
+				this.renderPosts(settings.posts);
 			},
 
 			renderPagination: function(rowCount) {
@@ -160,25 +144,14 @@
 					pagesCount = Math.floor((rowCount - 1) / pageSize) + 1,
 					paginationItem;
 				for (var i = 1; i <= pagesCount; i++) {
-					paginationItem = { 
-						id: i,
-						pagination: i 
-					}
+					paginationItem = { id: i, pagination: i };
 					pagination.push(paginationItem);
 				}	
-				tools.populateTemplate({
-					data: pagination, 
-					el: '#pagination', 
-					template: '#paginationTemplate'
-				});
+				$('#pagination').append(tools.popTmpl(pagination, '#paginationTemplate'));
 			},
 
 			renderPosts: function(posts) {
-				tools.populateTemplate({
-					data: posts, 
-					el: '#posts', 
-					template: '#postsTemplate'
-				});
+				$('#posts').append(tools.popTmpl(posts, '#postsTemplate'));
 			}
 		};
  
