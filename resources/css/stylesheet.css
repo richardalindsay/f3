@@ -22,7 +22,6 @@ body {
 #posts {
 	list-style: none;
 	padding: 0px;
-	min-height: 1000px;
 }
 
 #posts > li {

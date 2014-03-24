@@ -1,17 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-	<head>
-		<link rel="stylesheet" type="text/css" href="../css/stylesheet.css">
-		<title>f3</title>
-	</head>
-	<body>
-		<div id="header">
-			<h1>f3</h1>
-		</div>
-		<form id="addPost" method="post" action="../php/control.php?action=addPost">
-			<input type="text" name="title"><br>
-			<textarea name="content"></textarea><br>
-			<input type="submit" name="submit" value="add">
-		</form>
-	</body>
-</html>
+<div id="addPost" data-id>
+	<form>
+		<input type="text" name="title" data-template="title"><br>
+		<textarea name="content" data-template="content"></textarea><br>
+		<input type="submit">
+	</form>
+</div>
