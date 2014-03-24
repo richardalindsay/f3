@@ -1,8 +1,25 @@
-<script type="text/template" id="postsTemplate">
-	<li data-id={id}>
-		<h2>{title}</h2>
-		<span>by fsot on <span>{date}</span></span>
-		<p>{content}</p>
-		<a href="#" data-event="renderEditPostPage">edit</a> <a href="#" data-event="deletePost">delete</a>
-	</li>
+<script type="text/template" id="posts-template">
+	<a href="#/addPost" class="btn btn-primary">Add</a>
+	<hr />
+	<ul class="pagination pagination-sm">
+		<% for (var i = 0, l = pagination.length; i < l; i++) { %>
+			<li
+			<%= pagination[i].active ? ' class="active"' : '' %>
+			<%= pagination[i].disabled ? ' class="disabled"' : '' %>
+			>
+				<a href="#/page/<%= pagination[i].page %>"><%= pagination[i].text %></a>
+			</li>
+		<% }; %>
+	</ul>
+	<hr />
+	<ul>
+		<% _.each(posts, function(post) { %>
+			<li>
+				<h2><%= post.get('title') %></h2>
+				<span>by fsot on <%= post.get('date') %></span>
+				<p><%= post.get('content') %></p>
+				<a href="#/editPost/<%= post.id %>" class="btn btn-default btn-xs">edit</a>
+			</li>
+		<% }); %>
+	</ul>
 </script>

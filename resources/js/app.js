@@ -1,179 +1,132 @@
-(function() {
+$.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
+  options.url = 'resources/php/control.php/' + options.url;
+});
 
-	var ready = $(function() { tools.init(); }),
+$.fn.serializeObject = function() {
+  var o = {};
+  var a = this.serializeArray();
+  $.each(a, function() {
+      if (o[this.name] !== undefined) {
+          if (!o[this.name].push) {
+              o[this.name] = [o[this.name]];
+          }
+          o[this.name].push(this.value || '');
+      } else {
+          o[this.name] = this.value || '';
+      }
+  });
+  return o;
+};
 
-		settings = {
-			pageSize: 10,
-			url: {
-				getBlog: 'resources/php/control.php?action=getPosts&offset=',
-				addPost: 'resources/php/control.php?action=addPost',
-				editPost: 'resources/php/control.php?action=editPost&postId=',
-				deletePost: 'resources/php/control.php?action=deletePost&postId='
-			},
-			needEvent: [
-				'clickPagination',
-				'renderEditPostPage',
-				'deletePost'
-			],
-			posts: {}
-		},
+var Post = Backbone.Model.extend({
+	urlRoot: 'posts'
+})
 
-		tools = {
-			init: function() {
-				$(window).on('hashchange', events.router);
-				$('body').on('click', '[data-event]', events.handler);
-				events.router();
-			},
-
-			popTmpl: function(data, tmpl) {
-				var tmpl = $(tmpl).get(0).innerHTML,
-					$fragment = $('<div/>'),
-					tmplTmp,
-					row;
-				$.each(data, function(index, val) {
-					tmplTmp = tmpl;
-					row = $(tools.popTmplRow(tmplTmp, val));
-					$fragment.append(row);
-				});
-				return $fragment.children();
-			},
-
-			popTmplRow: function(tmplRow, data) {
-				$.each(data, function(index, val) {
-					if (tmplRow.match(new RegExp('<textarea.*>.*{' + index + '}.*<\/textarea>', 'g'))) {
-						val = val.replace(/<br>/g, '\n');
-					}
-					tmplRow = tmplRow.replace(new RegExp('{' + index + '}', 'g'), val);
-				});
-				return tmplRow;
-			},
-
-		},
-
-		events = {
-			handler: function(event) {
-				var dataEvent = $(event.target).data('event'),
-					needEvent = $.inArray(dataEvent, settings.needEvent) > -1;
-				event.preventDefault();
-				(needEvent) ? events[dataEvent](event) : events[dataEvent]();
-			},
-
-			router: function() {
-				var hashLink = location.hash.slice(1) || '/';
-				if (hashLink === '/') {
-					blog.getBlog();
-				} else if (hashLink === '/add') {
-					events.renderAddPostPage();
-				} else if (hashLink.match(/^\/page\/\d*/)) {
-					var page = hashLink.match(/^\/page\/(\d+)/)[1];
-					events.gotoPage(page);
-				} else {
-					location.hash = '/';
+var Posts = Backbone.Collection.extend({
+	url: 'posts',
+	pageSize: 10,
+	offset: 0,
+	currentPage: 1,
+	totalPages: 0,
+	pagination: [],
+	parse: function(response) {
+		this.pagination = this.calcPagination(response.info.rowCount);
+		return response.posts;
+	},
+	calcPagination: function(rowCount) {
+		var pagination = [],
+			currentPage = this.currentPage,
+			totalPages = Math.floor(rowCount / this.pageSize + 1);
+			(currentPage === 1) ? pagination.push({ text: '<', disabled: true }) : pagination.push({ text: '<', page: currentPage - 1 });
+			_.each(_.range(currentPage - 4, currentPage + 5), function(i) {
+				if (i < currentPage - 2 && totalPages - i <= 4 || i >= currentPage - 2 && i > 0 && pagination.length <= 5) {
+					(i === currentPage) ? pagination.push({ text: i, page: i, active: true }) : pagination.push({ text: i, page: i });
 				}
-			},
+			});
+			(currentPage === totalPages) ? pagination.push({ text: '>', disabled: true }) : pagination.push({ text: '>', page: currentPage + 1 });
+		return pagination;
+	}
+});
 
-			gotoPage: function(page) {
-				var pageSize = settings.pageSize,
-					offset = (page - 1) * pageSize;
-				blog.getBlog(offset);
-			},
-
-			clickPagination: function(event) {
-				var	page = $(event.target).closest('[data-id]').data('id'),
-					pageSize = settings.pageSize,
-					offset = (page - 1) * pageSize;
-				blog.getBlog(offset);
-			},
-
-			renderAddPostPage: function(post) {
-				var type = (post) ? 'edit' : 'add',
-					post = post || [{ id : '', title: '', content: ''}];
-				$('body').append(tools.popTmpl(post, '#addPostTemplate'));
-				$('#addPost input[type=submit]').val(type);
-				$('#addPost input[type=submit]').attr('data-event', type + 'Post');
-				document.title = 'f3 - ' + type.charAt(0).toUpperCase() + type.slice(1) + ' Post';
-				$('#blog').hide();
-			},
-
-			renderEditPostPage: function(event) {
-				var id = $(event.target).closest('[data-id]').data('id'),
-					posts = settings.posts,
-					post = [];
-				for (var i = 0, l = posts.length; i < l; i++) {
-					var tmpPostObj = posts[i],
-						postObj;
-					if (parseInt(tmpPostObj.id, 10) === id) {
-						postObj = posts[i];
-					}
-				}
-				post.push(postObj);
-				this.renderAddPostPage(post);
-			},
-
-			deletePost: function(event) {
-				var id = $(event.target).closest('[data-id]').data('id');
-				if (confirm('Are you sure?')) {
-					$.ajax({
-						url: settings.url.deletePost + id
-					}).done(function() {
-						blog.getBlog();
-					});
-				}
-			},
-
-			addPost: function(id) {
-				var addPostUrl = (id) ? settings.url.editPost + id : settings.url.addPost;
-				$.ajax({
-					type: 'post', 
-					url: addPostUrl,
-					data: $('#addPost form').serialize().replace(/%0(D%0A|A|D)/g, '<br>')
-				}).done(function() {
-					location.hash = '/';
-				});
-			},
-
-			editPost: function() {
-				this.addPost($('#addPost').data('id'));
-			}	
-		},
-
-		blog = {
-			getBlog: function(offset) {
-				var offset = offset || 0,
-					pageSize = settings.pageSize,
-					url = settings.url.getBlog + offset + '&pageSize=' + pageSize;
-				document.title = 'f3';
-				$('#pagination').empty();
-				$('#posts').empty();
-				$('#addPost').remove();
-				$('#blog').show();			
-				$.ajax(url).done(function(response) {
-					blog.render(response);
-				});
-			},
-
-			render: function(data) {
-				var rowCount = data.info.rowCount;
-				settings.posts = data.posts;
-				this.renderPagination(rowCount);
-				this.renderPosts(settings.posts);
-			},
-
-			renderPagination: function(rowCount) {
-				var pagination = [],
-					pageSize = settings.pageSize,
-					pagesCount = Math.floor((rowCount - 1) / pageSize) + 1,
-					paginationItem;
-				for (var i = 1; i <= pagesCount; i++) {
-					paginationItem = { id: i, pagination: i };
-					pagination.push(paginationItem);
-				}	
-				$('#pagination').append(tools.popTmpl(pagination, '#paginationTemplate'));
-			},
-
-			renderPosts: function(posts) {
-				$('#posts').append(tools.popTmpl(posts, '#postsTemplate'));
+var PostsView = Backbone.View.extend({
+	el: '#main',
+	render: function(options) {
+		var that = this;
+		var posts = new Posts();
+		posts.currentPage = options.page;
+		posts.offset = (posts.currentPage - 1) * posts.pageSize;
+		posts.fetch({
+			data: { pageSize: posts.pageSize, offset: posts.offset},
+			success: function() {
+				var template = _.template($('#posts-template').html(), {posts: posts.models, pagination: posts.pagination});
+				that.$el.html(template);
 			}
-		};
- 
-}());
+		});
+	}
+});
+
+var EditPostView = Backbone.View.extend({
+	el: '#main',
+	render: function(options) {
+		var that = this;
+		if (options.id) {
+			that.post = new Post({id: options.id});
+			that.post.fetch({
+				success: function(post) {
+					var template = _.template($('#edit-post-template').html(), {post: post});
+					that.$el.html(template);
+				}
+			});
+		} else {
+			var template = _.template($('#edit-post-template').html(), {post: null});
+			this.$el.html(template);
+		}
+	},
+	events: {
+		'submit .edit-post-form': 'savePost',
+		'click .delete': 'deletePost'
+	},
+	savePost: function(event) {
+		var postDetails = $(event.currentTarget).serializeObject();
+		var post = new Post();
+		post.save(postDetails, {
+			success: function(post) {
+				router.navigate('', {trigger: true});
+			}
+		});
+		return false;
+	},
+	deletePost: function(event) {
+		this.post.destroy({
+			success: function(post) {
+				router.navigate('', {trigger: true});
+			}
+		});
+		return false;
+	}
+});
+
+var Router = Backbone.Router.extend({
+	routes: {
+		'': 'home',
+		'addPost': 'editPost',
+		'editPost/:id': 'editPost',
+		'page/:page': 'showPage'
+	}
+});
+
+var postsView = new PostsView();
+var editPostView = new EditPostView();
+
+var router = new Router();
+router.on('route:home', function() {
+	postsView.render({page: 1});
+});
+router.on('route:editPost', function(id) {
+	editPostView.render({id: id});
+});
+router.on('route:showPage', function(page) {
+	postsView.render({page: parseInt(page, 10)});
+});
+
+Backbone.history.start();

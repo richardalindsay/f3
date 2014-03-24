@@ -4,3 +4,4 @@ create table posts(
     title varchar(500) default null,
     content varchar(20000) default null,
     date timestamp default current_timestamp not null
+);

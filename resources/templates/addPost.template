@@ -1,9 +1,0 @@
-<script type="text/template" id="addPostTemplate">
-	<div id="addPost" data-id={id}>
-		<form>
-			<input type="text" name="title" value="{title}"><br>
-			<textarea name="content">{content}</textarea><br>
-			<input type="submit" data-event>
-		</form>
-	</div>
-</script>
