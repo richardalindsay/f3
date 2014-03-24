@@ -1,8 +1,8 @@
 <script type="text/template" id="postsTemplate">
-	<li data-id>
+	<li>
 		<h2 data-template="title"></h2>
 		<span>by fsot on <span data-template="date"></span></span>
 		<p data-template="content"></p>
-		<a href="#" data-event="renderEditPostPage">edit</a> <a href="#" data-event="deletePost">delete</a>
+		<a href="#" class="renderAddPostPage" data-event="renderAddPostPage">edit</a> <a href="" class="deletePost" data-event="deletePost">delete</a>
 	</li>
 </script>
