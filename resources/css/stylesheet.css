@@ -8,7 +8,15 @@ body {
 
 #header {
 	padding: 20px;
-	background: #CCFFFF;
+	background: #cff;
+}
+
+#pagination {
+	padding: 0px;
+}
+
+#pagination li {
+	display: inline;
 }
 
 #posts {
@@ -24,4 +32,16 @@ body {
 
 p {
 	font-size: 14px;
+}
+
+pre {
+	background: #fff;
+	border: 1px solid #ccc;
+	padding: 10px;
+	white-space: pre-wrap;
+}
+
+textarea {
+	width: 794px;
+	height: 500px;
 }
