@@ -20,8 +20,9 @@
 
 		tools = {
 			init: function() {
-				$('body').on('click', '[data-event]', events.handler);				 
-				blog.getBlog();
+				$(window).on('hashchange', events.router);
+				$('body').on('click', '[data-event]', events.handler);
+				events.router();
 			},
 
 			popTmpl: function(data, tmpl) {
@@ -55,6 +56,26 @@
 					needEvent = $.inArray(dataEvent, settings.needEvent) > -1;
 				event.preventDefault();
 				(needEvent) ? events[dataEvent](event) : events[dataEvent]();
+			},
+
+			router: function() {
+				var hashLink = location.hash.slice(1) || '/';
+				if (hashLink === '/') {
+					blog.getBlog();
+				} else if (hashLink === '/add') {
+					events.renderAddPostPage();
+				} else if (hashLink.match(/^\/page\/\d*/)) {
+					var page = hashLink.match(/^\/page\/(\d+)/)[1];
+					events.gotoPage(page);
+				} else {
+					location.hash = '/';
+				}
+			},
+
+			gotoPage: function(page) {
+				var pageSize = settings.pageSize,
+					offset = (page - 1) * pageSize;
+				blog.getBlog(offset);
 			},
 
 			clickPagination: function(event) {
@@ -107,7 +128,7 @@
 					url: addPostUrl,
 					data: $('#addPost form').serialize().replace(/%0(D%0A|A|D)/g, '<br>')
 				}).done(function() {
-					blog.getBlog();
+					location.hash = '/';
 				});
 			},
 
