@@ -1,0 +1,27 @@
+body {
+	font-family: Arial;
+	font-size: 14px;
+	background-color: #E0E0E0;
+	width: 800px;
+	margin: 20px auto;
+}
+
+#header {
+	padding: 20px;
+	background: #CCFFFF;
+}
+
+#posts {
+	list-style: none;
+	padding: 0px;
+	min-height: 1000px;
+}
+
+#posts > li {
+	padding: 10px 0 20px 0;
+	border-bottom: 1px solid #ccc;
+}
+
+p {
+	font-size: 14px;
+}
