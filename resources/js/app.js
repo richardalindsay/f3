@@ -194,6 +194,15 @@ var Router = Backbone.Router.extend({
 		'page/:page': 'showPage',
 		'addPost': 'editPost',
 		'editPost/:id': 'editPost'
+	},
+	home: function() {
+		blogView.render({ page: 1 });
+	},
+	showPage: function(page) {
+		blogView.render({ page: parseInt(page, 10) });
+	},
+	editPost: function(id) {
+		editPostView.render({ id: id });
 	}
 });
 
@@ -202,17 +211,5 @@ var blogView = new BlogView();
 var editPostView = new EditPostView();
 
 var router = new Router();
-
-router.on('route:home', function() {
-	blogView.render({ page: 1 });
-});
-
-router.on('route:showPage', function(page) {
-	blogView.render({ page: parseInt(page, 10) });
-});
-
-router.on('route:editPost', function(id) {
-	editPostView.render({ id: id });
-});
 
 Backbone.history.start();
