@@ -14,8 +14,10 @@
 			<div id="main"></div>
 		</div>
 		<?php
-			include ("resources/templates/editPost.template");
+			include ("resources/templates/controls.template");
+			include ("resources/templates/pagination.template");
 			include ("resources/templates/posts.template");
+			include ("resources/templates/editPost.template");
 		?>
 		<script src="lib/js/jquery.min.js"></script>
 		<script src="lib/js/underscore-min.js"></script>

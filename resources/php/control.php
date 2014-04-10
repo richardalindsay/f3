@@ -3,22 +3,22 @@
 	require '../../lib/php/Slim/Slim.php';
 	\Slim\Slim::registerAutoloader();
 	$app = new \Slim\Slim();
-	$app->get('/posts/', function() use($app, $con){
+	$app->get('/blog/', function() use($app, $con){
 		$pageSize = $app->request()->get('pageSize');
 		$offset = $app->request()->get('offset');
 		$rowCountQuery = "SELECT COUNT(*) AS rowCount FROM posts";
 		$postsQuery = "SELECT * FROM posts ORDER BY id DESC LIMIT ".$pageSize." OFFSET ".$offset;
 		$rowCountResult = mysqli_query($con, $rowCountQuery);
-		$info = mysqli_fetch_assoc($rowCountResult);
+		$pagination = mysqli_fetch_assoc($rowCountResult);
 		$postsResult = mysqli_query($con, $postsQuery);
 		foreach ($postsResult as $postsRow) {
 			$posts[] = $postsRow;
 		}
-		$data = array('info' => $info, 'posts' => $posts);
+		$data = array('pagination' => $pagination, 'posts' => $posts);
 		header('Content-type: application/json');
 		echo json_encode($data);
 	});
-	$app->post('/posts/', function() use($app, $con) {
+	$app->post('/post/', function() use($app, $con) {
 		$post = json_decode($app->request()->getBody(), true);
 		$title = mysqli_real_escape_string($con, $post['title']);
 		$content = mysqli_real_escape_string($con, $post['content']);
@@ -27,14 +27,14 @@
 		header('Content-type: application/json');
 		echo json_encode(array('id' => mysqli_insert_id($con), 'title' => $title, 'content' => $content));
 	});
-	$app->get('/posts/:id', function($id) use($con) {
+	$app->get('/post/:id', function($id) use($con) {
 		$addPostQuery = "SELECT * FROM posts WHERE id = $id";
 		$postsResult = mysqli_query($con, $addPostQuery);
 		$data = mysqli_fetch_assoc($postsResult);
 		header('Content-type: application/json');
 		echo json_encode($data);
 	});
-	$app->put('/posts/:id', function($id) use($app, $con) {
+	$app->put('/post/:id', function($id) use($app, $con) {
 		$put = json_decode($app->request()->getBody(), true);
 		$title = mysqli_real_escape_string($con, $put['title']);
 		$content = mysqli_real_escape_string($con, $put['content']);
@@ -43,7 +43,7 @@
 		header('Content-type: application/json');
 		echo json_encode(array('id' => $id, 'title' => $title, 'content' => $content));
 	});
-	$app->delete('/posts/:id', function($id) use($con) {
+	$app->delete('/post/:id', function($id) use($con) {
 		$deletePostQuery = "DELETE FROM posts WHERE id = $id";
 		mysqli_query($con, $deletePostQuery);
 		header('Content-type: application/json');

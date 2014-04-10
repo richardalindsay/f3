@@ -1,14 +1,13 @@
 <script type="text/template" id="edit-post-template">
 	<form class='edit-post-form'>
-		<legend><%= post ? 'Edit' : 'Add' %> Post</legend>
+		<legend><%= id ? 'Edit' : 'Add' %> Post</legend>
 		<label>Title</label><br>
-		<input type="text" name="title" value="<%= post ? post.get('title') : '' %>"/><br>
+		<input type="text" name="title" value="<%= id ? title : '' %>"/><br>
 		<label>Content</label><br>
-		<textarea name="content"><%= post ? post.get('content') : '' %></textarea>
+		<textarea name="content"><%= id ? content : '' %></textarea>
 		<hr />
-		<button type="submit" class="btn btn-default btn-xs"><%= post ? 'edit' : 'add' %></button>
-		<% if (post) { %>
-			<input type="hidden" name="id" value="<%= post.id %>" />
+		<button type="submit" class="btn btn-default btn-xs"><%= id ? 'edit' : 'add' %></button>
+		<% if (id) { %>
 			<button type="button" class="btn btn-danger btn-xs delete">delete</button>
 		<% }; %>
 	</form>
