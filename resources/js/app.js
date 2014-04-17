@@ -25,19 +25,23 @@ var config = {
 var Blog = Backbone.Model.extend({
 	url: 'blog',
 	parse: function(response) {
-		return { pagination: response.pagination , 'posts': response.posts };
-	}
+		return { pagination: response.pagination , posts: response.posts };
+	},
 });
 
 var Pagination = Backbone.Model.extend({
 	defaults: {
 		'className': '',
 		'element': 'a'
-	}
+	},
 });
 
 var Post = Backbone.Model.extend({
-	urlRoot: 'post'
+	urlRoot: 'post',
+	sync: function() {
+		(arguments[0] === 'read') ?	this.set({ action: true }) : this.set({ action: false }) ;
+		return Backbone.sync.apply(this, arguments);
+	}
 });
 
 var PaginationList = Backbone.Collection.extend({ model: Pagination });
@@ -48,8 +52,7 @@ var ControlsView = Backbone.View.extend({
 	className: 'controls',
 	template: _.template($('#controls-template').html()),
 	render: function() {
-		this.$el.empty();
-		this.$el.append(this.template());
+		this.$el.html(this.template());
 		return this;
 	}
 });
@@ -79,13 +82,13 @@ var PaginationListView = Backbone.View.extend({
 		var pagination = [],
 			page = this.page,
 			totalPages = Math.floor(rowCount / config.pageSize + 1);
-			(page === 1) ? pagination.push({ text: '<', page: '#', className: 'disabled' }) : pagination.push({ text: '<', page: page - 1 });
-			_.each(_.range(page - 4, page + 5), function(i) {
-				if (i < page - 2 && totalPages - i <= 4 || i >= page - 2 && i > 0 && pagination.length <= 5) {
-					(i === page) ? pagination.push({ text: i, page: i, className: 'active' }) : pagination.push({ text: i, page: i });
-				}
-			});
-			(page === totalPages) ? pagination.push({ text: '>', page: '#', className: 'disabled' }) : pagination.push({ text: '>', page: page + 1 });
+		(page === 1) ? pagination.push({ text: '<', page: '#', className: 'disabled' }) : pagination.push({ text: '<', page: page - 1 });
+		_.each(_.range(page - 4, page + 5), function(i) {
+			if (i < page - 2 && totalPages - i <= 4 || i >= page - 2 && i > 0 && pagination.length <= 5) {
+				(i === page) ? pagination.push({ text: i, page: i, className: 'active' }) : pagination.push({ text: i, page: i });
+			}
+		});
+		(page === totalPages) ? pagination.push({ text: '>', page: '#', className: 'disabled' }) : pagination.push({ text: '>', page: page + 1 });
 		return pagination;
 	}
 });
@@ -106,8 +109,8 @@ var PostsView = Backbone.View.extend({
 	render: function(options) {
 		this.$el.empty();
 		this.collection = new Posts(options.collection);
-		this.collection.each(function(post){
-			var postView = new PostView({ model: post });
+		this.collection.each(function(model){
+			var postView = new PostView({ model: model });
 			this.$el.append(postView.render().el);
 	    }, this);
 		return this;    
@@ -131,10 +134,7 @@ var BlogView = Backbone.View.extend({
 		var $paginationTop = $(this.subViews.paginationListView.render({ page: this.model.get('page'), rowCount : this.model.get('pagination').rowCount }).el);
 		var $posts = $(this.subViews.postsView.render({ collection: this.model.get('posts') }).el);
 		var $paginationBottom = $paginationTop.clone();
-		this.fragment.append($controls);
-		this.fragment.append($paginationTop);
-		this.fragment.append($posts);
-		this.fragment.append($paginationBottom);
+		this.fragment.append($controls).append($paginationTop).append($posts).append($paginationBottom);
 		this.$el.html(this.fragment);
 		return this;
 	}
@@ -149,33 +149,24 @@ var EditPostView = Backbone.View.extend({
 		'click .delete': 'deletePost'
 	},
 	initialize: function() {
-	    _.bindAll(this, 'renderSuccess');
+	    this.listenTo(this.model, 'sync', this.designateAction);
+	    this.listenTo(this.model, 'clear', this.renderEditPost);
 	},
-	render: function(options) {
-		if (options.id) {
-			this.model = new Post({ id: options.id });
-			this.model.fetch({ success: this.renderSuccess });
-		} else {
-			this.model.clear(); 
-			this.$el.html(this.template({ id: null }));
-		}
+	designateAction: function(model) {
+		(this.model.get('action')) ? this.renderEditPost(model) : router.navigate('', { trigger: true });
 	},
-	renderSuccess: function(post) {
-		this.$el.html(this.template(post.toJSON()));
+	renderEditPost: function(model) {
+		this.$el.html(this.template(model ? this.model.toJSON() : { id: null }));
 	},
 	savePost: function(event) {
+		event.preventDefault();
 		var postData = $(event.currentTarget).serializeObject();
 		if (this.model.id) postData = $.extend({ id: this.model.id }, postData);
-		this.model = new Post();
-		this.model.save(postData, { success: this.navigateHome });
-		event.preventDefault();
+		this.model.save(postData);
 	},
 	deletePost: function(event) {
-		this.model.destroy({ success: this.navigateHome });
 		event.preventDefault();
-	},
-	navigateHome: function() {
-		router.navigate('', { trigger: true });
+		this.model.destroy();
 	}
 });
 
@@ -183,11 +174,11 @@ var Router = Backbone.Router.extend({
 	routes: {
 		'': 'home',
 		'page/:page': 'showPage',
-		'addPost': 'editPost',
+		'addPost': 'addPost',
 		'editPost/:id': 'editPost'
 	},
 	home: function() {
-		blogView.model.set({ 'page': 1 });
+		blogView.model.set({ page: 1 });
 		blogView.model.fetch({
 			data: { pageSize: config.pageSize, offset: 0 }
 		});
@@ -195,13 +186,18 @@ var Router = Backbone.Router.extend({
 	showPage: function(page) {
 		var page = parseInt(page, 10),
 			offset = (page - 1) * config.pageSize;
-		blogView.model.set({ 'page': page });
+		blogView.model.set({ page: page });
 		blogView.model.fetch({
 			data: { pageSize: config.pageSize, offset: offset }
 		});
 	},
+	addPost: function() {
+		editPostView.model.clear();
+		editPostView.model.trigger('clear');
+	},
 	editPost: function(id) {
-		editPostView.render({ id: id });
+		editPostView.model.set({ id: id });
+		editPostView.model.fetch();
 	}
 });
 
