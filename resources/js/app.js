@@ -39,7 +39,7 @@ var Pagination = Backbone.Model.extend({
 var Post = Backbone.Model.extend({
 	urlRoot: 'post',
 	sync: function() {
-		(arguments[0] === 'read') ?	this.set({ action: true }) : this.set({ action: false }) ;
+		(arguments[0] === 'read') ?	this.set({ action: true }) : this.set({ action: false });
 		return Backbone.sync.apply(this, arguments);
 	}
 });
@@ -68,19 +68,22 @@ var PaginationView = Backbone.View.extend({
 var PaginationListView = Backbone.View.extend({
 	tagName: 'ul',
 	className: 'pagination pagination-sm',
-	render: function(options) {
+	collection: new PaginationList(),
+	initialize : function (options) {
+ 		this.options = options;
+	},
+	render: function() {
 		this.$el.empty();
-		this.page = options.page;
-		this.collection = new PaginationList(this.calcPagination(options.rowCount));
-		this.collection.each(function(pagination){
-			var paginationView = new PaginationView({ model: pagination });
-			this.$el.append(paginationView.render().el);
+		this.collection.reset(this.calcPagination(this.options.rowCount));
+		this.collection.each(function(model){
+			this.modelView = new PaginationView({ model: model });
+			this.$el.append(this.modelView.render().el);
 	    }, this);
 		return this;
 	},
 	calcPagination: function(rowCount) {
 		var pagination = [],
-			page = this.page,
+			page = this.options.page,
 			totalPages = Math.floor(rowCount / config.pageSize + 1);
 		(page === 1) ? pagination.push({ text: '<', page: '#', className: 'disabled' }) : pagination.push({ text: '<', page: page - 1 });
 		_.each(_.range(page - 4, page + 5), function(i) {
@@ -98,7 +101,7 @@ var PostView = Backbone.View.extend({
 	className: 'post',
 	template: _.template($('#posts-template').html()),
 	render: function(){
-		this.$el.append(this.template(this.model.toJSON()));
+		this.$el.html(this.template(this.model.toJSON()));
 		return this;
 	}
 });
@@ -106,12 +109,11 @@ var PostView = Backbone.View.extend({
 var PostsView = Backbone.View.extend({
 	tagName: 'ul',
 	className: 'posts',
-	render: function(options) {
+	render: function() {
 		this.$el.empty();
-		this.collection = new Posts(options.collection);
 		this.collection.each(function(model){
-			var postView = new PostView({ model: model });
-			this.$el.append(postView.render().el);
+			this.modelView = new PostView({ model: model });
+			this.$el.append(this.modelView.render().el);
 	    }, this);
 		return this;    
 	}
@@ -121,20 +123,23 @@ var BlogView = Backbone.View.extend({
 	el: '#main',
 	fragment: $(document.createDocumentFragment()),
 	model: new Blog(),
-    initialize: function () {
-        this.listenTo(this.model, 'sync', this.render);
-    },
 	subViews: {
 		controlsView: new ControlsView(),
 		paginationListView: new PaginationListView(),
 		postsView: new PostsView()
 	},
+    initialize: function () {
+        this.listenTo(this.model, 'sync', this.render);
+    },
 	render: function() {
-		var $controls = $(this.subViews.controlsView.render().el);
-		var $paginationTop = $(this.subViews.paginationListView.render({ page: this.model.get('page'), rowCount : this.model.get('pagination').rowCount }).el);
-		var $posts = $(this.subViews.postsView.render({ collection: this.model.get('posts') }).el);
-		var $paginationBottom = $paginationTop.clone();
-		this.fragment.append($controls).append($paginationTop).append($posts).append($paginationBottom);
+		this.subViews.controlsView = new ControlsView();
+		this.subViews.paginationListView = new PaginationListView({ page: this.model.get('page'), rowCount: this.model.get('pagination').rowCount });
+		this.subViews.postsView = new PostsView({ collection: new Posts(this.model.get('posts')) });
+		this.subViews.$controls = $(this.subViews.controlsView.render().el);
+		this.subViews.$paginationTop = $(this.subViews.paginationListView.render().el);
+		this.subViews.$posts = $(this.subViews.postsView.render().el);
+		this.subViews.$paginationBottom = this.subViews.$paginationTop.clone();
+		this.fragment.append(this.subViews.$controls).append(this.subViews.$paginationTop).append(this.subViews.$posts).append(this.subViews.$paginationBottom);
 		this.$el.html(this.fragment);
 		return this;
 	}
