@@ -1,13 +1,14 @@
 <?php
 	$con = mysqli_connect("localhost", "root", "p3rfecto", "f3");
-	require '../../lib/php/Slim/Slim.php';
-	\Slim\Slim::registerAutoloader();
-	$app = new \Slim\Slim();
-	$app->get('/blog/', function() use($app, $con){
-		$pageSize = $app->request()->get('pageSize');
-		$offset = $app->request()->get('offset');
+	$method = $_SERVER['REQUEST_METHOD'];
+	$request = explode('/', $_SERVER['PATH_INFO']);
+	$action = $request[1];
+	if (isset($request[2])) $id = $request[2];
+	if ($method == "GET" && $action == "blog") {
+		$pageSize = $_GET['pageSize'];
+		$offset = $_GET['offset'];
 		$rowCountQuery = "SELECT COUNT(*) AS rowCount FROM posts";
-		$postsQuery = "SELECT * FROM posts ORDER BY id DESC LIMIT ".$pageSize." OFFSET ".$offset;
+		$postsQuery = "SELECT * FROM posts ORDER BY id DESC LIMIT $pageSize OFFSET $offset";
 		$rowCountResult = mysqli_query($con, $rowCountQuery);
 		$pagination = mysqli_fetch_assoc($rowCountResult);
 		$postsResult = mysqli_query($con, $postsQuery);
@@ -17,38 +18,32 @@
 		$data = array('pagination' => $pagination, 'posts' => $posts);
 		header('Content-type: application/json');
 		echo json_encode($data);
-	});
-	$app->post('/post/', function() use($app, $con) {
-		$post = json_decode($app->request()->getBody(), true);
+	} else if ($method == "GET" && $action == "post" && isset($id)) {
+		$addPostQuery = "SELECT * FROM posts WHERE id = $id";
+		$postsResult = mysqli_query($con, $addPostQuery);
+		$data = mysqli_fetch_assoc($postsResult);
+		header('Content-type: application/json');
+		echo json_encode($data);
+	} else if ($method == "POST" && $action == "post") {
+		$post = json_decode(file_get_contents('php://input'), true);
 		$title = mysqli_real_escape_string($con, $post['title']);
 		$content = mysqli_real_escape_string($con, $post['content']);
 		$addPostQuery = "INSERT INTO posts (title, content) VALUES ('$title', '$content')";
 		mysqli_query($con, $addPostQuery);
 		header('Content-type: application/json');
 		echo json_encode(array('id' => mysqli_insert_id($con), 'title' => $title, 'content' => $content));
-	});
-	$app->get('/post/:id', function($id) use($con) {
-		$addPostQuery = "SELECT * FROM posts WHERE id = $id";
-		$postsResult = mysqli_query($con, $addPostQuery);
-		$data = mysqli_fetch_assoc($postsResult);
-		header('Content-type: application/json');
-		echo json_encode($data);
-	});
-	$app->put('/post/:id', function($id) use($app, $con) {
-		$put = json_decode($app->request()->getBody(), true);
+	} else if ($method == "PUT" && $action == "post" && isset($id)) {
+		$put = json_decode(file_get_contents('php://input'), true);
 		$title = mysqli_real_escape_string($con, $put['title']);
 		$content = mysqli_real_escape_string($con, $put['content']);
 		$editPostQuery = "UPDATE posts SET title = '$title', content = '$content' WHERE id = $id";
 		mysqli_query($con, $editPostQuery);
 		header('Content-type: application/json');
 		echo json_encode(array('id' => $id, 'title' => $title, 'content' => $content));
-	});
-	$app->delete('/post/:id', function($id) use($con) {
+	} else if ($method == "DELETE" && $action == "post" && isset($id)) {
 		$deletePostQuery = "DELETE FROM posts WHERE id = $id";
 		mysqli_query($con, $deletePostQuery);
 		header('Content-type: application/json');
 		echo json_encode("delete post successful");
-	});
-	$app->run();
-	mysqli_close($con);
+	}
 ?>

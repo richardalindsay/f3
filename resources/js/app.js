@@ -138,6 +138,7 @@ var BlogView = Backbone.View.extend({
 		this.subViews.$controls = $(this.subViews.controlsView.render().el);
 		this.subViews.$paginationTop = $(this.subViews.paginationListView.render().el);
 		this.subViews.$posts = $(this.subViews.postsView.render().el);
+		$('pre', this.subViews.$posts).each(function(i, e) { hljs.highlightBlock(e); });
 		this.subViews.$paginationBottom = this.subViews.$paginationTop.clone();
 		this.fragment.append(this.subViews.$controls).append(this.subViews.$paginationTop).append(this.subViews.$posts).append(this.subViews.$paginationBottom);
 		this.$el.html(this.fragment);
@@ -212,4 +213,10 @@ var editPostView = new EditPostView();
 
 var router = new Router();
 
-Backbone.history.start();
+$(function() {
+	init();
+});
+
+var init = function() {
+	Backbone.history.start();
+}

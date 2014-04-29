@@ -4,6 +4,7 @@
 		<meta charset='utf-8'>
 		<link rel="stylesheet" href="lib/css/bootstrap.min.css">
 		<link rel="stylesheet" href="lib/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="lib/css/highlight-theme-monokai_sublime.css">
 		<title>f3</title>
 	</head>
 	<body>
@@ -22,6 +23,7 @@
 		<script src="lib/js/jquery.min.js"></script>
 		<script src="lib/js/underscore-min.js"></script>
 		<script src="lib/js/backbone-min.js"></script>
+		<script src="lib/js/highlight-min.js"></script>
 		<script src="resources/js/app.js"></script>
 	</body>
 </html>
