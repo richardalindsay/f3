@@ -4,7 +4,9 @@
 		<meta charset='utf-8'>
 		<link rel="stylesheet" href="lib/css/bootstrap.min.css">
 		<link rel="stylesheet" href="lib/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="lib/css/font-awesome.min.css">
 		<link rel="stylesheet" href="lib/css/highlight-theme-monokai_sublime.css">
+		<link rel="stylesheet" href="resources/css/stylesheet.css">
 		<title>f3</title>
 	</head>
 	<body>

@@ -3,19 +3,22 @@ $.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
 });
 
 $.fn.serializeObject = function() {
-  var o = {};
-  var a = this.serializeArray();
-  $.each(a, function() {
-      if (o[this.name] !== undefined) {
-          if (!o[this.name].push) {
-              o[this.name] = [o[this.name]];
-          }
-          o[this.name].push(this.value || '');
-      } else {
-          o[this.name] = this.value || '';
-      }
-  });
-  return o;
+	var o = {};
+	var a = this.serializeArray();
+	this.find('[contenteditable]').each(function() {
+		a.push({ name: $(this).attr('name'), value: $(this).html()});
+	})
+	$.each(a, function() {
+		if (o[this.name] !== undefined) {
+			if (!o[this.name].push) {
+				o[this.name] = [o[this.name]];
+			}
+			o[this.name].push(this.value || '');
+		} else {
+			o[this.name] = this.value || '';
+		}
+	});
+	return o;
 };
 
 var config = {
@@ -23,7 +26,7 @@ var config = {
 };
 
 var Blog = Backbone.Model.extend({
-	url: 'blog',
+	urlRoot: 'blog',
 	parse: function(response) {
 		return { pagination: response.pagination , posts: response.posts };
 	},
@@ -60,7 +63,7 @@ var ControlsView = Backbone.View.extend({
 var PaginationView = Backbone.View.extend({
 	template: _.template($('#pagination-template').html()),
 	render: function() {
-		this.setElement(this.template(this.model.toJSON()));
+		this.setElement(this.template(this.model.attributes));
 		return this;
 	}
 });
@@ -101,14 +104,14 @@ var PostView = Backbone.View.extend({
 	className: 'post',
 	template: _.template($('#posts-template').html()),
 	render: function(){
-		this.$el.html(this.template(this.model.toJSON()));
+		this.$el.html(this.template(this.model.attributes));
 		return this;
 	}
 });
 
 var PostsView = Backbone.View.extend({
 	tagName: 'ul',
-	className: 'posts',
+	className: 'posts list-unstyled',
 	render: function() {
 		this.$el.empty();
 		this.collection.each(function(model){
@@ -152,7 +155,8 @@ var EditPostView = Backbone.View.extend({
 	model: new Post(),
 	events: {
 		'submit .edit-post-form': 'savePost',
-		'click .delete': 'deletePost'
+		'click .delete': 'deletePost',
+		'click .editControls button': 'editContent'
 	},
 	initialize: function() {
 	    this.listenTo(this.model, 'sync', this.designateAction);
@@ -162,7 +166,7 @@ var EditPostView = Backbone.View.extend({
 		(this.model.get('action')) ? this.renderEditPost(model) : router.navigate('', { trigger: true });
 	},
 	renderEditPost: function(model) {
-		this.$el.html(this.template(model ? this.model.toJSON() : { id: null }));
+		this.$el.html(this.template(model ? this.model.attributes : { id: null }));
 	},
 	savePost: function(event) {
 		event.preventDefault();
@@ -173,6 +177,16 @@ var EditPostView = Backbone.View.extend({
 	deletePost: function(event) {
 		event.preventDefault();
 		this.model.destroy();
+	},
+	editContent: function(event) {
+		event.preventDefault();
+		var role = $(event.currentTarget).closest('[data-role]').data('role'),
+			formatBlock = { 'h1': true, 'h2': true, 'p': true, 'pre': true };
+		if (formatBlock[role]) {
+			document.execCommand('formatBlock', false, role);
+		} else {
+			document.execCommand(role, false, null);
+		}	
 	}
 });
 
