@@ -180,9 +180,8 @@ var EditPostView = Backbone.View.extend({
 	},
 	editContent: function(event) {
 		event.preventDefault();
-		var role = $(event.currentTarget).closest('[data-role]').data('role'),
-			formatBlock = { 'h1': true, 'h2': true, 'p': true, 'pre': true };
-		if (formatBlock[role]) {
+		var role = $(event.currentTarget).closest('[data-role]').data('role');
+		if (/h1|h2|p|pre/.test(role)) {
 			document.execCommand('formatBlock', false, role);
 		} else {
 			document.execCommand(role, false, null);
