@@ -100,8 +100,8 @@ var PaginationListView = Backbone.View.extend({
 });
 
 var PostView = Backbone.View.extend({
-	tagName: 'li',
-	className: 'post',
+	tagName: 'div',
+	className: 'blog-post',
 	template: _.template($('#posts-template').html()),
 	render: function(){
 		this.$el.html(this.template(this.model.attributes));
@@ -110,8 +110,7 @@ var PostView = Backbone.View.extend({
 });
 
 var PostsView = Backbone.View.extend({
-	tagName: 'ul',
-	className: 'posts list-unstyled',
+	className: 'blog-main',
 	render: function() {
 		this.$el.empty();
 		this.collection.each(function(model){
@@ -183,7 +182,8 @@ var EditPostView = Backbone.View.extend({
 		var role = $(event.currentTarget).closest('[data-role]').data('role');
 		if (/h1|h2|p|pre/.test(role)) {
 			document.execCommand('formatBlock', false, role);
-		} else {
+		}
+		else {
 			document.execCommand(role, false, null);
 		}	
 	}
