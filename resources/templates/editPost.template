@@ -10,26 +10,26 @@
 		<div class="form-group">
 			<div class="col-sm-offset-1 col-sm-11">
 				<div class="btn-group editControls">
-					<button class="btn btn-default" type="button" data-role="pre">PRE</button>
-					<button class="btn btn-default" type="button" data-role="undo"><i class="fa fa-undo"></i></button>
-					<button class="btn btn-default" type="button" data-role="redo"><i class="fa fa-repeat"></i></button>
-					<button class="btn btn-default" type="button" data-role="bold"><i class="fa fa-bold"></i></button>
-					<button class="btn btn-default" type="button" data-role="italic"><i class="fa fa-italic"></i></button>
-					<button class="btn btn-default" type="button" data-role="underline"><i class="fa fa-underline"></i></button>
-					<button class="btn btn-default" type="button" data-role="strikeThrough"><i class="fa fa-strikethrough"></i></button>
-					<button class="btn btn-default" type="button" data-role="justifyLeft"><i class="fa fa-align-left"></i></button>
-					<button class="btn btn-default" type="button" data-role="justifyCenter"><i class="fa fa-align-center"></i></button>
-					<button class="btn btn-default" type="button" data-role="justifyRight"><i class="fa fa-align-right"></i></button>
-					<button class="btn btn-default" type="button" data-role="justifyFull"><i class="fa fa-align-justify"></i></button>
-					<button class="btn btn-default" type="button" data-role="indent"><i class="fa fa-indent"></i></button>
-					<button class="btn btn-default" type="button" data-role="outdent"><i class="fa fa-outdent"></i></button>
-					<button class="btn btn-default" type="button" data-role="insertUnorderedList"><i class="fa fa-list-ul"></i></button>
-					<button class="btn btn-default" type="button" data-role="insertOrderedList"><i class="fa fa-list-ol"></i></button>
+					<button class="btn btn-default" type="button" data-role="pre">&lt;&gt;</button>
+					<button class="btn btn-default" type="button" data-role="undo"><span class="glyphicon glyphicon-circle-arrow-left"></span></button>
+					<button class="btn btn-default" type="button" data-role="redo"><span class="glyphicon glyphicon-repeat"></span></button>
+					<button class="btn btn-default" type="button" data-role="bold"><span class="glyphicon glyphicon-bold"></span></button>
+					<button class="btn btn-default" type="button" data-role="italic"><span class="glyphicon glyphicon-italic"></span></i></button>
+					<button class="btn btn-default" type="button" data-role="underline"><u>A</u></button>
+					<button class="btn btn-default" type="button" data-role="strikeThrough"><strike>A</strike></button>
+					<button class="btn btn-default" type="button" data-role="justifyLeft"><span class="glyphicon glyphicon-align-left"></span></button>
+					<button class="btn btn-default" type="button" data-role="justifyCenter"><span class="glyphicon glyphicon-align-center"></span></button>
+					<button class="btn btn-default" type="button" data-role="justifyRight"><span class="glyphicon glyphicon-align-right"></span></i></button>
+					<button class="btn btn-default" type="button" data-role="justifyFull"><span class="glyphicon glyphicon-align-justify"></span></button>
+					<button class="btn btn-default" type="button" data-role="indent"><span class="glyphicon glyphicon-indent-left"></span></button>
+					<button class="btn btn-default" type="button" data-role="outdent"><span class="glyphicon glyphicon-indent-right"></span></button>
+					<button class="btn btn-default" type="button" data-role="insertUnorderedList"><span class="glyphicon glyphicon-list"></span></button>
+					<button class="btn btn-default" type="button" data-role="insertOrderedList">1<span class="glyphicon glyphicon-list"></button>
 					<button class="btn btn-default" type="button" data-role="h1">h<sup>1</sup></button>
 					<button class="btn btn-default" type="button" data-role="h2">h<sup>2</sup></button>
 					<button class="btn btn-default" type="button" data-role="p">p</button>
-					<button class="btn btn-default" type="button" data-role="subscript"><i class="fa fa-subscript"></i></button>
-					<button class="btn btn-default" type="button" data-role="superscript"><i class="fa fa-superscript"></i></button>
+					<button class="btn btn-default" type="button" data-role="subscript"><sub>A</sub></button>
+					<button class="btn btn-default" type="button" data-role="superscript"><sup>A</sup></button>
 				</div>
 			</div>
 		</div>

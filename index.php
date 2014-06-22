@@ -4,11 +4,10 @@
 		<meta charset='utf-8'>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-		<link rel="stylesheet" href="lib/css/bootstrap.min.css">
-		<link rel="stylesheet" href="lib/css/bootstrap-theme.min.css">
-		<link rel="stylesheet" href="lib/css/bootstrap-blog.css">
-		<link rel="stylesheet" href="lib/css/font-awesome.min.css">
-		<link rel="stylesheet" href="lib/css/highlight-theme-monokai_sublime.css">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+		<link rel="stylesheet" href="//yandex.st/highlightjs/8.0/styles/monokai_sublime.min.css">
+		<link rel="stylesheet" href="resources/css/bootstrap-blog.css">
 		<link rel="stylesheet" href="resources/css/stylesheet.css">
 		<title>f3</title>
 	</head>
@@ -82,10 +81,10 @@
 			include ("resources/templates/posts.template");
 			include ("resources/templates/editPost.template");
 		?>
-		<script src="lib/js/jquery.min.js"></script>
-		<script src="lib/js/underscore-min.js"></script>
-		<script src="lib/js/backbone-min.js"></script>
-		<script src="lib/js/highlight-min.js"></script>
+		<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.0/highlight.min.js"></script>
 		<script src="resources/js/app.js"></script>
 	</body>
 </html>
