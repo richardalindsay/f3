@@ -46,7 +46,7 @@
 					tmplRow = tmplRow.replace(new RegExp('{' + index + '}', 'g'), val);
 				});
 				return tmplRow;
-			},
+			}
 
 		},
 
@@ -147,16 +147,17 @@
 				$('#posts').empty();
 				$('#addPost').remove();
 				$('#blog').show();			
-				$.ajax(url).done(function(response) {
-					blog.render(response);
+				$.ajax(url).done(function(postsXML) {
+					$.ajax('resources/xsl/posts.xsl').done(function(postsXSL) {
+						blog.render(postsXML, postsXSL);
+					});
 				});
 			},
 
-			render: function(data) {
-				var rowCount = data.info.rowCount;
-				settings.posts = data.posts;
+			render: function(xml, xsl) {
+				var rowCount = $(xml).find('rowCount').text();
 				this.renderPagination(rowCount);
-				this.renderPosts(settings.posts);
+				this.renderPosts(xml, xsl);
 			},
 
 			renderPagination: function(rowCount) {
@@ -171,8 +172,12 @@
 				$('#pagination').append(tools.popTmpl(pagination, '#paginationTemplate'));
 			},
 
-			renderPosts: function(posts) {
-				$('#posts').append(tools.popTmpl(posts, '#postsTemplate'));
+			renderPosts: function(xml, xsl) {
+				var xsltProcessor = new XSLTProcessor(),
+					resultDocument;
+  				xsltProcessor.importStylesheet(xsl);
+  				resultDocument = xsltProcessor.transformToFragment(xml, document);
+  				$("#posts").append(resultDocument);
 			}
 		};
  
