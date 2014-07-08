@@ -11,18 +11,48 @@
 	mysqli_close($con);
 
 	function getPosts() {
-		global $pageSize, $offset, $con;
-		$rowCountQuery = "SELECT COUNT(*) AS rowCount FROM posts";
-		$postsQuery = "SELECT * FROM posts ORDER BY id DESC LIMIT ".$pageSize." OFFSET ".$offset;
-		$rowCountResult = mysqli_query($con, $rowCountQuery);
-		$info = mysqli_fetch_assoc($rowCountResult);
-		$postsResult = mysqli_query($con, $postsQuery);
-		foreach ($postsResult as $postsRow) {
-			$posts[] = $postsRow;
+		global $con;
+		$pageSize = $_GET['pageSize'];
+		if (isset($_GET['offset'])) {
+			$offset = $_GET['offset'];
+		} else {
+			$offset = 0;
 		}
-		$data = array('info' => $info, 'posts' => $posts);
-		header('Content-type: application/json');
-		echo json_encode($data);		
+		$rowCountQuery = "SELECT COUNT(*) AS rowCount FROM posts";
+		$postsQuery = "SELECT * FROM posts ORDER BY id DESC LIMIT $pageSize OFFSET $offset";
+		$rowCountResult = mysqli_query($con, $rowCountQuery);
+		$postsResult = mysqli_query($con, $postsQuery);
+
+		$rowCount = mysqli_fetch_assoc($rowCountResult);
+		$posts = mysqli_fetch_assoc($postsResult);
+
+		$xml = new DOMDocument("1.0", "UTF-8");
+		$root = $xml->createElement('data');
+		$info = $xml->createElement('info');
+		$postsRoot = $xml->createElement('posts');
+		$xml->appendChild($root);
+
+		foreach ($rowCount as $key => $value) {
+			$keyTag = $xml->createElement($key);
+			$valueText = $xml->createTextNode($value);
+			$keyTag->appendChild($valueText);
+			$info->appendChild($keyTag);
+	  	}
+
+		foreach ($postsResult as $postsRow) {
+			$postsTag = $xml->createElement('post');
+			foreach ($postsRow as $key => $value) {
+				$keyTag = $xml->createElement($key);
+				$valueText = $xml->createTextNode($value);
+				$keyTag->appendChild($valueText);
+				$postsTag->appendChild($keyTag);
+		  	}
+		  	$postsRoot->appendChild($postsTag);
+		}
+		$root->appendChild($info);
+		$root->appendChild($postsRoot);
+		header('Content-type: application/xml');
+		echo $xml->saveXML();	
 	}
 
 	function addPost() {
