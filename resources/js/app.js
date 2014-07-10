@@ -8,7 +8,9 @@
 				getBlog: 'resources/php/control.php?action=getPosts&offset=',
 				addPost: 'resources/php/control.php?action=addPost',
 				editPost: 'resources/php/control.php?action=editPost&postId=',
-				deletePost: 'resources/php/control.php?action=deletePost&postId='
+				deletePost: 'resources/php/control.php?action=deletePost&postId=',
+				renderPagination: 'resources/xsl/pagination.xsl',
+				renderPosts: 'resources/xsl/posts.xsl'
 			},
 			needEvent: [
 				'clickPagination',
@@ -78,13 +80,6 @@
 				blog.getBlog(offset);
 			},
 
-			clickPagination: function(event) {
-				var	page = $(event.target).closest('[data-id]').data('id'),
-					pageSize = settings.pageSize,
-					offset = (page - 1) * pageSize;
-				blog.getBlog(offset);
-			},
-
 			renderAddPostPage: function(post) {
 				var type = (post) ? 'edit' : 'add',
 					post = post || [{ id : '', title: '', content: ''}];
@@ -147,37 +142,25 @@
 				$('#posts').empty();
 				$('#addPost').remove();
 				$('#blog').show();			
-				$.ajax(url).done(function(postsXML) {
-					$.ajax('resources/xsl/posts.xsl').done(function(postsXSL) {
-						blog.render(postsXML, postsXSL);
-					});
+				$.ajax(url).done(function(response) {
+					blog.render(response);
 				});
 			},
 
-			render: function(xml, xsl) {
-				var rowCount = $(xml).find('rowCount').text();
-				this.renderPagination(rowCount);
-				this.renderPosts(xml, xsl);
+			render: function(xml) {
+				this.renderSection(xml, settings.url.renderPagination, '#pagination');
+				this.renderSection(xml, settings.url.renderPosts, '#posts');
 			},
 
-			renderPagination: function(rowCount) {
-				var pagination = [],
-					pageSize = settings.pageSize,
-					pagesCount = Math.floor((rowCount - 1) / pageSize) + 1,
-					paginationItem;
-				for (var i = 1; i <= pagesCount; i++) {
-					paginationItem = { id: i, pagination: i };
-					pagination.push(paginationItem);
-				}	
-				$('#pagination').append(tools.popTmpl(pagination, '#paginationTemplate'));
-			},
+			renderSection: function(xml, url, el) {
+				$.ajax(url).done(function(xsl) {
+					var xsltProcessor = new XSLTProcessor(),
+						resultDocument;
+	  				xsltProcessor.importStylesheet(xsl);
+	  				resultDocument = xsltProcessor.transformToFragment(xml, document);
+	  				$(el).append(resultDocument);
+				});
 
-			renderPosts: function(xml, xsl) {
-				var xsltProcessor = new XSLTProcessor(),
-					resultDocument;
-  				xsltProcessor.importStylesheet(xsl);
-  				resultDocument = xsltProcessor.transformToFragment(xml, document);
-  				$("#posts").append(resultDocument);
 			}
 		};
  

@@ -24,20 +24,21 @@
 		$postsResult = mysqli_query($con, $postsQuery);
 
 		$rowCount = mysqli_fetch_assoc($rowCountResult);
+		$pageCount = floor(($rowCount['rowCount'] - 1) / 10) + 1;
 		$posts = mysqli_fetch_assoc($postsResult);
 
 		$xml = new DOMDocument("1.0", "UTF-8");
 		$root = $xml->createElement('data');
-		$info = $xml->createElement('info');
+		$paginationRoot = $xml->createElement('pagination');
 		$postsRoot = $xml->createElement('posts');
 		$xml->appendChild($root);
 
-		foreach ($rowCount as $key => $value) {
-			$keyTag = $xml->createElement($key);
-			$valueText = $xml->createTextNode($value);
-			$keyTag->appendChild($valueText);
-			$info->appendChild($keyTag);
-	  	}
+		for ($i = 1; $i <= $pageCount; $i++) {
+			$paginationTag = $xml->createElement('page');
+			$paginationText = $xml->createTextNode($i);
+			$paginationTag->appendChild($paginationText);
+			$paginationRoot->appendChild($paginationTag);
+		}		
 
 		foreach ($postsResult as $postsRow) {
 			$postsTag = $xml->createElement('post');
@@ -49,10 +50,11 @@
 		  	}
 		  	$postsRoot->appendChild($postsTag);
 		}
-		$root->appendChild($info);
+		$root->appendChild($paginationRoot);
 		$root->appendChild($postsRoot);
 		header('Content-type: application/xml');
-		echo $xml->saveXML();	
+		echo $xml->saveXML();
+		 
 	}
 
 	function addPost() {
