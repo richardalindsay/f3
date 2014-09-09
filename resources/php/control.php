@@ -1,5 +1,5 @@
 <?php
-	$con = mysqli_connect("localhost", "root", "p3rfecto", "f3");
+	$con = mysqli_connect("localhost", "rich", "p3rfecto", "f3");
 	$method = $_SERVER['REQUEST_METHOD'];
 	$request = explode('/', $_SERVER['PATH_INFO']);
 	$action = $request[1];
