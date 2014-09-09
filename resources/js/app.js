@@ -26,7 +26,10 @@ var config = {
 };
 
 var Blog = Backbone.Model.extend({
-	urlRoot: 'blog',
+	url: function() {
+    	var offset = (this.get('page') - 1) * config.pageSize;
+    	return 'blog/' + config.pageSize + '/' + offset;
+   	},
 	parse: function(response) {
 		return { pagination: response.pagination , posts: response.posts };
 	},
@@ -197,18 +200,12 @@ var Router = Backbone.Router.extend({
 		'editPost/:id': 'editPost'
 	},
 	home: function() {
-		blogView.model.set({ page: 1 });
-		blogView.model.fetch({
-			data: { pageSize: config.pageSize, offset: 0 }
-		});
+		blogView.model.set({ page : 1 });
+    	blogView.model.fetch();
 	},
 	showPage: function(page) {
-		var page = parseInt(page, 10),
-			offset = (page - 1) * config.pageSize;
-		blogView.model.set({ page: page });
-		blogView.model.fetch({
-			data: { pageSize: config.pageSize, offset: offset }
-		});
+		blogView.model.set({ page : parseInt(page, 10) });
+		blogView.model.fetch();
 	},
 	addPost: function() {
 		editPostView.model.clear();

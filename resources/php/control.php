@@ -3,27 +3,19 @@
 	$method = $_SERVER['REQUEST_METHOD'];
 	$request = explode('/', $_SERVER['PATH_INFO']);
 	$action = $request[1];
-	if (isset($request[2])) $id = $request[2];
+	if (isset($request[2])) $param2 = $request[2];
+	if (isset($request[3])) $param3 = $request[3];
 
-	if ($action == "blog") {
-		if (isset($id)) {
-		} else {
-			if ($method == "GET") blog_get();
-		}
-	} else if ($action == "post") {
-		if (isset($id)) {
-			if ($method == "GET") post_id_get();
-			else if ($method == "PUT") post_id_put();
-			else if ($method == "DELETE") post_id_delete();
-		} else {
-			if ($method == "POST") post_post();
-		}
-	}
+	if ($method == "GET" && $action == "blog") blog_get();
+	else if ($method == "GET" && $action == "post") post_id_get();
+	else if ($method == "POST" && $action == "post") post_id_post();
+	else if ($method == "PUT" && $action == "post") post_id_put();
+	else if ($method == "DELETE" && $action == "post") post_id_delete();
 
 	function blog_get() {
-		global $con;
-		$pageSize = $_GET['pageSize'];
-		$offset = $_GET['offset'];
+		global $con, $param2, $param3;
+		$pageSize = $param2;
+		$offset = $param3;
 		$rowCountQuery = "SELECT COUNT(*) AS rowCount FROM posts";
 		$postsQuery = "SELECT * FROM posts ORDER BY id DESC LIMIT $pageSize OFFSET $offset";
 		$rowCountResult = mysqli_query($con, $rowCountQuery);
@@ -32,11 +24,12 @@
 		foreach ($postsResult as $postsRow) $posts[] = $postsRow;
 		$data = array('pagination' => $pagination, 'posts' => $posts);
 		header('Content-type: application/json');
-		echo json_encode($data);	
+		echo json_encode($data);
 	}
 
 	function post_id_get() {
-		global $con, $id;
+		global $con, $param2;
+		$id = $param2;
 		$addPostQuery = "SELECT * FROM posts WHERE id = $id";
 		$postsResult = mysqli_query($con, $addPostQuery);
 		$data = mysqli_fetch_assoc($postsResult);
@@ -45,7 +38,8 @@
 	}
 
 	function post_id_put() {
-		global $con, $id;
+		global $con, $param2;
+		$id = $param2;
 		$put = json_decode(file_get_contents('php://input'), true);
 		$title = mysqli_real_escape_string($con, $put['title']);
 		$content = mysqli_real_escape_string($con, $put['content']);
@@ -56,14 +50,15 @@
 	}
 
 	function post_id_delete() {
-		global $con, $id;
+		global $con, $param2;
+		$id = $param2;
 		$deletePostQuery = "DELETE FROM posts WHERE id = $id";
 		mysqli_query($con, $deletePostQuery);
 		header('Content-type: application/json');
 		echo json_encode("delete post successful");		
 	}
 
-	function post_post() {
+	function post_id_post() {
 		global $con;
 		$post = json_decode(file_get_contents('php://input'), true);
 		$title = mysqli_real_escape_string($con, $post['title']);
