@@ -1,7 +1,3 @@
-$.ajaxPrefilter( function( options, originalOptions, jqXHR ) {
-  options.url = 'resources/php/control.php/' + options.url;
-});
-
 $.fn.serializeObject = function() {
 	var o = {};
 	var a = this.serializeArray();
@@ -27,12 +23,12 @@ var config = {
 
 var Blog = Backbone.Model.extend({
 	url: function() {
-    	var offset = (this.get('page') - 1) * config.pageSize;
-    	return 'blog/' + config.pageSize + '/' + offset;
-   	},
-	parse: function(response) {
-		return { pagination: response.pagination , posts: response.posts };
+		var offset = (this.get('page') - 1) * config.pageSize;
+		return 'blog/' + config.pageSize + '/' + offset;
 	},
+	parse: function(response) {
+		return { pagination: response.data.pagination , posts: response.data.posts };
+	}
 });
 
 var Pagination = Backbone.Model.extend({
@@ -44,9 +40,14 @@ var Pagination = Backbone.Model.extend({
 
 var Post = Backbone.Model.extend({
 	urlRoot: 'post',
+	idAttribute: '_id',
 	sync: function() {
+		this.set({ id : this.id });
 		(arguments[0] === 'read') ?	this.set({ action: true }) : this.set({ action: false });
 		return Backbone.sync.apply(this, arguments);
+	},
+	initialize: function() {
+		this.set({ id : this.id });
 	}
 });
 
@@ -201,7 +202,7 @@ var Router = Backbone.Router.extend({
 	},
 	home: function() {
 		blogView.model.set({ page : 1 });
-    	blogView.model.fetch();
+		blogView.model.fetch();
 	},
 	showPage: function(page) {
 		blogView.model.set({ page : parseInt(page, 10) });
@@ -212,7 +213,7 @@ var Router = Backbone.Router.extend({
 		editPostView.model.trigger('clear');
 	},
 	editPost: function(id) {
-		editPostView.model.set({ id: id });
+		editPostView.model.set({ _id : id });
 		editPostView.model.fetch();
 	}
 });

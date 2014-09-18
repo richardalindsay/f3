@@ -1,3 +1,0 @@
-<script type="text/template" id="controls-template">
-	<a href="#/addPost" class="btn btn-primary">Add</a>
-</script>

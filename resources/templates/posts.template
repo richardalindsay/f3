@@ -1,6 +1,0 @@
-<script type="text/template" id="posts-template">
-	<h2 class="blog-post-title"><%= title %></h2>
-	<p class="blog-post-meta"><%= date %> by <a href="#">fsot</a></p>
-	<div class="blog-post-content"><%= content %></div>
-	<a href="#/editPost/<%= id %>" class="btn btn-default btn-xs">edit</a>
-</script>
