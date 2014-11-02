@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
+db.bind('posts');
+
 router.get('/', function(req, res) {
     res.render('index');
 });
@@ -11,11 +13,11 @@ router.get('/blog/:pageSize/:offset', function (req, res) {
         offset = parseInt(req.params.offset, 10),
         count,
         posts;
-    db.collection('posts').count(function (err, response) {
+    db.posts.count(function (err, response) {
         count = response;
         next();
     });
-    db.collection('posts').find({}, { title : 1, content: 1, date : 1 }).sort({ _id : -1 }).skip(offset).limit(pageSize).toArray(function (err, response) {
+    db.posts.find({}, { title : 1, content: 1, date : 1 }).sort({ _id : -1 }).skip(offset).limit(pageSize).toArray(function (err, response) {
         posts = response;
 
         for(var i = 0, l = posts.length; i < l; i++) {
@@ -37,7 +39,7 @@ router.get('/blog/:pageSize/:offset', function (req, res) {
 
 router.post('/post/', function (req, res) {
     var db = req.db;
-    db.collection('posts').insert({ title : req.body.title, content : req.body.content }, function(err, response) {
+    db.posts.insert({ title : req.body.title, content : req.body.content }, function(err, response) {
         res.json(response);
     });
 });
@@ -45,7 +47,7 @@ router.post('/post/', function (req, res) {
 router.get('/post/:id/', function (req, res) {
     var db = req.db,
         id = req.params.id;
-    db.collection('posts').findById(id, function(err, response) {
+    db.posts.findById(id, function(err, response) {
         res.json(response);
     });
 });
@@ -53,7 +55,7 @@ router.get('/post/:id/', function (req, res) {
 router.put('/post/:id/', function (req, res) {
     var db = req.db,
         id = req.params.id;
-    db.collection('posts').updateById(id, {'$set' : { title : req.body.title, content : req.body.content } }, function(err,response) {
+    db.posts.updateById(id, {'$set' : { title : req.body.title, content : req.body.content } }, function(err,response) {
         res.json(response);
     });
 });
@@ -61,7 +63,7 @@ router.put('/post/:id/', function (req, res) {
 router.delete('/post/:id/', function (req, res) {
     var db = req.db,
         id = req.params.id;
-    db.collection('posts').removeById(id, function(err, response) {
+    db.posts.removeById(id, function(err, response) {
         res.json(response);
     });
 });
