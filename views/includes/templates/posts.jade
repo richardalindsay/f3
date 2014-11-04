@@ -1,0 +1,6 @@
+script#posts-template(type='text/template')
+	h2.blog-post-title!= '<%= title %>'
+	p.blog-post-meta <%= date %> by 
+		a(href='#') fsot
+	.blog-post-content <%= content %>
+	<a class="btn btn-default btn-xs" href="#/editPost/<%= id %>">edit</a>

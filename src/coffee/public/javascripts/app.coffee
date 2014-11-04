@@ -24,7 +24,7 @@ config =
 Blog = Backbone.Model.extend
 	url: ->
 		offset = (@get('page') - 1) * config.pageSize
-		return 'blog/' + config.pageSize + '/' + offset
+		return 'api/blog/' + config.pageSize + '/' + offset
 
 	parse: (response) ->
 		return pagination: response.data.pagination , posts: response.data.posts
@@ -35,7 +35,7 @@ Pagination = Backbone.Model.extend
 		'element': 'a'
 
 Post = Backbone.Model.extend
-	urlRoot: 'post'
+	urlRoot: 'api/post'
 	idAttribute: '_id'
 
 	sync: () ->

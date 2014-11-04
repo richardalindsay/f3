@@ -1,0 +1,64 @@
+extends layout
+
+block stylesheets
+    include includes/stylesheets
+
+block title
+    title f3
+
+block header
+    .blog-masthead
+        .container
+            nav.blog-nav
+                a.blog-nav-item.active(href='#') Home
+                a.blog-nav-item(href='#') New features
+                a.blog-nav-item(href='#') Press
+                a.blog-nav-item(href='#') New hires
+                a.blog-nav-item(href='#') About
+
+block main
+    .container
+        .blog-header
+            h1.blog-title f3
+            p.lead.blog-description the future sound of taipei version 3
+        .row
+            .col-sm-8.blog-main
+                #main
+            .col-sm-3.col-sm-offset-1.blog-sidebar
+                .sidebar-module.sidebar-module-inset
+                    h4 About
+                    p Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.
+                .sidebar-module
+                    h4 Archives
+                    ol.list-unstyled
+                        li: a(href='#') January 2014
+                        li: a(href='#') December 2013
+                        li: a(href='#') November 2013
+                        li: a(href='#') October 2013
+                        li: a(href='#') September 2013
+                        li: a(href='#') August 2013
+                        li: a(href='#') July 2013
+                        li: a(href='#') June 2013
+                        li: a(href='#') May 2013
+                        li: a(href='#') April 2013
+                        li: a(href='#') March 2013
+                        li: a(href='#') February 2013
+                .sidebar-module
+                    h4 Elsewhere
+                    ol.list-unstyled
+                        li: a(href='#') GitHub
+                        li: a(href='#') Twitter
+                        li: a(href='#') Facebook
+
+block footer
+    .blog-footer
+        p: a(href='#') Back to top
+
+block templates
+    include includes/templates/controls
+    include includes/templates/pagination
+    include includes/templates/posts
+    include includes/templates/edit-post
+
+block scripts
+    include includes/scripts

@@ -33,7 +33,7 @@
     url: function() {
       var offset;
       offset = (this.get('page') - 1) * config.pageSize;
-      return 'blog/' + config.pageSize + '/' + offset;
+      return 'api/blog/' + config.pageSize + '/' + offset;
     },
     parse: function(response) {
       return {
@@ -51,7 +51,7 @@
   });
 
   Post = Backbone.Model.extend({
-    urlRoot: 'post',
+    urlRoot: 'api/post',
     idAttribute: '_id',
     sync: function() {
       this.set({
