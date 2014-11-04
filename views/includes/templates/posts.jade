@@ -1,6 +1,5 @@
-script#posts-template(type='text/template')
-	h2.blog-post-title!= '<%= title %>'
-	p.blog-post-meta <%= date %> by 
-		a(href='#') fsot
-	.blog-post-content <%= content %>
+script#posts-template(type='text/template').
+	<h2 class="blog-post-title"><%= title %></h2>
+	<p class="blog-post-meta"><%= date %> by <a href="#">fsot</a></p>
+	<div class="blog-post-content"><%= content %></p>
 	<a class="btn btn-default btn-xs" href="#/editPost/<%= id %>">edit</a>

@@ -1,9 +1,9 @@
-script#pagination-template(type='text/template')
-	|	<% if (className) { %>
-	|		<li class="<%= className %>">
-	|			<span><%= text %></span>
-	|	<% } else { %>
-	|		<li>
-	|			<a href="#/page/<%= page %>"><%= text %></a>
-	|	<% } %>
-	|	</li>
+script#pagination-template(type='text/template').
+	<% if (className) { %>
+		<li class="<%= className %>">
+			<span><%= text %></span>
+	<% } else { %>
+		<li>
+			<a href="#/page/<%= page %>"><%= text %></a>
+	<% } %>
+		</li>
