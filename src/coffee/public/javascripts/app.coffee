@@ -52,14 +52,14 @@ Posts = Backbone.Collection.extend model: Post
 
 ControlsView = Backbone.View.extend
 	className: 'controls'
-	template: _.template $('#controls-template').html()
+	template: Handlebars.compile $('#controls-template').html(), noEscape: true
 
 	render: () ->
 		@$el.html @template()
 		return @
 
 PaginationView = Backbone.View.extend
-	template: _.template $('#pagination-template').html()
+	template: Handlebars.compile $('#pagination-template').html(), noEscape: true
 
 	render: () ->
 		@setElement @template @model.attributes;
@@ -109,7 +109,7 @@ PaginationListView = Backbone.View.extend
 PostView = Backbone.View.extend
 	tagName: 'div'
 	className: 'blog-post'
-	template: _.template $('#posts-template').html()
+	template: Handlebars.compile $('#posts-template').html(), noEscape: true
 
 	render: () ->
 		@$el.html @template @model.attributes
@@ -158,7 +158,7 @@ BlogView = Backbone.View.extend
 
 EditPostView = Backbone.View.extend
 	el: '#main'
-	template: _.template $('#edit-post-template').html()
+	template: Handlebars.compile $('#edit-post-template').html(), noEscape: true
 	model: new Post()
 	events:
 		'submit .edit-post-form': 'savePost'

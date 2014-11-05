@@ -1,5 +1,5 @@
-script#posts-template(type='text/template').
-	<h2 class="blog-post-title"><%= title %></h2>
-	<p class="blog-post-meta"><%= date %> by <a href="#">fsot</a></p>
-	<div class="blog-post-content"><%= content %></p>
-	<a class="btn btn-default btn-xs" href="#/editPost/<%= id %>">edit</a>
+script#posts-template(type='text/x-handlebars-template').
+	<h2 class="blog-post-title">{{title}}</h2>
+	<p class="blog-post-meta">{{date}} by <a href="#">fsot</a></p>
+	<div class="blog-post-content">{{content}}</p>
+	<a class="btn btn-default btn-xs" href="#/editPost/{{id}}">edit</a>

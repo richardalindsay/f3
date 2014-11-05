@@ -85,7 +85,9 @@
 
   ControlsView = Backbone.View.extend({
     className: 'controls',
-    template: _.template($('#controls-template').html()),
+    template: Handlebars.compile($('#controls-template').html(), {
+      noEscape: true
+    }),
     render: function() {
       this.$el.html(this.template());
       return this;
@@ -93,7 +95,9 @@
   });
 
   PaginationView = Backbone.View.extend({
-    template: _.template($('#pagination-template').html()),
+    template: Handlebars.compile($('#pagination-template').html(), {
+      noEscape: true
+    }),
     render: function() {
       this.setElement(this.template(this.model.attributes));
       return this;
@@ -170,7 +174,9 @@
   PostView = Backbone.View.extend({
     tagName: 'div',
     className: 'blog-post',
-    template: _.template($('#posts-template').html()),
+    template: Handlebars.compile($('#posts-template').html(), {
+      noEscape: true
+    }),
     render: function() {
       this.$el.html(this.template(this.model.attributes));
       return this;
@@ -230,7 +236,9 @@
 
   EditPostView = Backbone.View.extend({
     el: '#main',
-    template: _.template($('#edit-post-template').html()),
+    template: Handlebars.compile($('#edit-post-template').html(), {
+      noEscape: true
+    }),
     model: new Post(),
     events: {
       'submit .edit-post-form': 'savePost',
