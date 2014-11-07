@@ -1,5 +1,7 @@
-script#posts-template(type='text/x-handlebars-template').
-	<h2 class="blog-post-title">{{title}}</h2>
-	<p class="blog-post-meta">{{date}} by <a href="#">fsot</a></p>
-	<div class="blog-post-content">{{content}}</p>
-	<a class="btn btn-default btn-xs" href="#/editPost/{{id}}">edit</a>
+.blog-post(ng-controller='postsController')
+	.blog-post(ng-repeat='post in posts')
+		h2.blog-post-title {{ post.title }}
+		p.blog-post-meta {{ post.date }} by 
+			a fsot
+		div.blog-post-content {{ post.content }}
+		a.btn.btn-default.btn-xs(href='#/editPost/{{ post.id }}') edit
