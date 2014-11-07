@@ -6,3 +6,9 @@ app.controller('postsController', function($scope, $http) {
         $scope.posts = response.data.data.posts;
     });
 });
+
+app.filter('trustAsHtml', function($sce){
+    return function(text) {
+        return $sce.trustAsHtml(text);
+    };
+});
