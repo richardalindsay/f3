@@ -39,6 +39,29 @@ app.controller('editPostController', function ($scope, pageService, $routeParams
         $scope.form = {};
     }
 
+    $scope.editControls = [
+        { role: 'pre', content: '&lt;&gt' },
+        { role: 'undo', content: '<span class="glyphicon glyphicon-circle-arrow-left"></span>' },
+        { role: 'redo', content: '<span class="glyphicon glyphicon-repeat"></span>' },
+        { role: 'bold', content: '<span class="glyphicon glyphicon-bold"></span>' },
+        { role: 'italic', content: '<span class="glyphicon glyphicon-italic"></span>' },
+        { role: 'underline', content: '<u>A</u>' },
+        { role: 'strikethrough', content: '<strike>A</strike>' },
+        { role: 'justifyLeft', content: '<span class="glyphicon glyphicon-align-left"></span>' },
+        { role: 'justifyCenter', content: '<span class="glyphicon glyphicon-align-center"></span>' },
+        { role: 'justifyRight', content: '<span class="glyphicon glyphicon-align-right"></span>' },
+        { role: 'justifyFull', content: '<span class="glyphicon glyphicon-align-justify"></span>' },
+        { role: 'indent', content: '<span class="glyphicon glyphicon-indent-left"></span>' },
+        { role: 'outdent', content: '<span class="glyphicon glyphicon-indent-right"></span>' },
+        { role: 'insertUnorderedList', content: '<span class="glyphicon glyphicon-list"></span>' },
+        { role: 'insertOrderedList', content: '1<span class="glyphicon glyphicon-list"</span>' },
+        { role: 'h1', content: 'h<sup>1</sup>' },
+        { role: 'h2', content: 'h<sup>2</sup>' },
+        { role: 'p', content: 'p' },
+        { role: 'subscript', content: '<sub>A</sub>' },
+        { role: 'superscript', content: '<sup>A</sup>' }
+    ];
+
     $scope.submit = function() {
         if ($scope.form._id) {
             pageService.putPost($scope.form._id, $scope.form.title, $scope.form.content).then(function () {
@@ -55,6 +78,14 @@ app.controller('editPostController', function ($scope, pageService, $routeParams
         pageService.deletePost($scope.form._id).then(function () {
            $location.path('/'); 
         });
+    }
+
+    $scope.formatText = function(role) {
+        if (/h1|h2|p|pre/.test(role)) {
+            document.execCommand('formatBlock', false, role);
+        } else {
+            document.execCommand(role, false, null);
+        }
     }
 });
 

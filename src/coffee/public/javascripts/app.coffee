@@ -1,238 +1,205 @@
-$.fn.serializeObject = ->
-	o = {}
-	a = @serializeArray()
-	@find "[contenteditable]"
-	.each ->
-		a.push
-			name: 
-				$ @
-				.attr("name")
-			value: 
-				$ @
-				.html()
-	$.each a, ->
-		if o[@name] isnt `undefined`
-			o[@name] = [o[@name]]  unless o[@name].push
-			o[@name].push @value or ""
-		else
-			o[@name] = @value or ""
-	return o
+# var app = angular.module('app', ['ngRoute']);
 
-config =
-	pageSize: 10
+# app.config(function ($routeProvider) {
+#     $routeProvider
+#     .when('/', {
+#         templateUrl : 'partials/blog-page',
+#         controller  : 'blogController'
+#     })
+#     .when('/page/:page', {
+#         templateUrl : 'partials/blog-page',
+#         controller  : 'blogController'
+#     })
+#     .when('/addPost', {
+#         templateUrl : 'partials/edit-post',
+#         controller  : 'editPostController'
+#     })
+#     .when('/editPost/:_id', {
+#         templateUrl : 'partials/edit-post',
+#         controller  : 'editPostController'
+#     })
+# });
 
-Blog = Backbone.Model.extend
-	url: ->
-		offset = (@get('page') - 1) * config.pageSize
-		return 'api/blog/' + config.pageSize + '/' + offset
+# app.controller('blogController', function ($scope, blogService, $routeParams) {
+#     var page = parseInt($routeParams.page, 10) || 1;
+#     blogService.getBlog(page).then(function (response) {
+#         var rowCount = response.data.data.pagination.rowCount;
+#         $scope.pagination = {};
+#         $scope.pagination.paginationList = blogService.calcPagination(rowCount, page);
+#         $scope.posts = response.data.data.posts;
+#     });
+# });
 
-	parse: (response) ->
-		return pagination: response.data.pagination , posts: response.data.posts
+# app.controller('editPostController', function ($scope, pageService, $routeParams, $location) {
+#     if ($routeParams._id) {
+#         pageService.getPost($routeParams._id).then(function (response) {
+#             $scope.form = response.data;
+#         });
+#     } else {
+#         $scope.form = {};
+#     }
 
-Pagination = Backbone.Model.extend
-	defaults:
-		'className': ''
-		'element': 'a'
+#     $scope.editControls = [
+#         { role: 'pre', content: '&lt;&gt' },
+#         { role: 'undo', content: '<span class="glyphicon glyphicon-circle-arrow-left"></span>' },
+#         { role: 'redo', content: '<span class="glyphicon glyphicon-repeat"></span>' },
+#         { role: 'bold', content: '<span class="glyphicon glyphicon-bold"></span>' },
+#         { role: 'italic', content: '<span class="glyphicon glyphicon-italic"></span>' },
+#         { role: 'underline', content: '<u>A</u>' },
+#         { role: 'strikethrough', content: '<strike>A</strike>' },
+#         { role: 'justifyLeft', content: '<span class="glyphicon glyphicon-align-left"></span>' },
+#         { role: 'justifyCenter', content: '<span class="glyphicon glyphicon-align-center"></span>' },
+#         { role: 'justifyRight', content: '<span class="glyphicon glyphicon-align-right"></span>' },
+#         { role: 'justifyFull', content: '<span class="glyphicon glyphicon-align-justify"></span>' },
+#         { role: 'indent', content: '<span class="glyphicon glyphicon-indent-left"></span>' },
+#         { role: 'outdent', content: '<span class="glyphicon glyphicon-indent-right"></span>' },
+#         { role: 'insertUnorderedList', content: '<span class="glyphicon glyphicon-list"></span>' },
+#         { role: 'insertOrderedList', content: '1<span class="glyphicon glyphicon-list"</span>' },
+#         { role: 'h1', content: 'h<sup>1</sup>' },
+#         { role: 'h2', content: 'h<sup>2</sup>' },
+#         { role: 'p', content: 'p' },
+#         { role: 'subscript', content: '<sub>A</sub>' },
+#         { role: 'superscript', content: '<sup>A</sup>' }
+#     ];
 
-Post = Backbone.Model.extend
-	urlRoot: 'api/post'
-	idAttribute: '_id'
+#     $scope.submit = function() {
+#         if ($scope.form._id) {
+#             pageService.putPost($scope.form._id, $scope.form.title, $scope.form.content).then(function () {
+#                 $location.path('/'); 
+#             });
+#         } else {
+#             pageService.postPost($scope.form.title, $scope.form.content).then(function() {
+#                $location.path('/'); 
+#             });
+#         }
+#     }
 
-	sync: () ->
-		@set id : @id
-		if arguments[0] is 'read' then @set action: true else @set action: false
-		return Backbone.sync.apply @, arguments
+#     $scope.deletePost = function() {
+#         pageService.deletePost($scope.form._id).then(function () {
+#            $location.path('/'); 
+#         });
+#     }
 
-	initialize: () ->
-		@set id : @id
+#     $scope.formatText = function(role) {
+#         if (/h1|h2|p|pre/.test(role)) {
+#             document.execCommand('formatBlock', false, role);
+#         } else {
+#             document.execCommand(role, false, null);
+#         }
+#     }
+# });
 
-PaginationList = Backbone.Collection.extend model: Pagination
+# app.service('blogService', function ($http) {
 
-Posts = Backbone.Collection.extend model: Post
+#     function calcPagination (rowCount, page) {
+#         var pagination, totalPages;
+#         pagination = [];
+#         totalPages = Math.floor(rowCount / 10 + 1);
+#         if (page === 1) {
+#             pagination.push({
+#                 text: '<',
+#                 page: '#',
+#                 className: 'disabled'
+#             });
+#         } else {
+#             pagination.push({
+#                 text: '<',
+#                 page: page - 1
+#             });
+#         }
+#         for (var i = page - 4; i <= page + 5; i++) {
+#             if (i < page - 2 && totalPages - i <= 4 || i >= page - 2 && i > 0 && pagination.length <= 5) {
+#                 if (i === page) {
+#                     pagination.push({
+#                         text: i,
+#                         page: i,
+#                         className: 'active'
+#                     });
+#                 } else {
+#                     pagination.push({
+#                         text: i,
+#                         page: i
+#                     });
+#                 }
+#             }
+#         }
+#         if (page === totalPages) {
+#             pagination.push({
+#                 text: '>',
+#                 page: '#',
+#                 className: 'disabled'
+#             });
+#         } else {
+#             pagination.push({
+#                 text: '>',
+#                 page: page + 1
+#             });
+#         }
+#         return pagination;
+#     }
 
-ControlsView = Backbone.View.extend
-	className: 'controls'
-	template: Handlebars.compile $('#controls-template').html(), noEscape: true
+#     function getBlog (page) {
+#         var offset = (page - 1) * 10;
+#         return $http.get('http://localhost:3000/api/blog/10/' + offset);
+#     }
 
-	render: () ->
-		@$el.html @template()
-		return @
+#     return {
+#         getBlog: getBlog,
+#         calcPagination: calcPagination
+#     };
+# });
 
-PaginationView = Backbone.View.extend
-	template: Handlebars.compile $('#pagination-template').html(), noEscape: true
+# app.service('pageService', function ($http) {
 
-	render: () ->
-		@setElement @template @model.attributes;
-		return @
+#     function postPost (title, content) {
+#         return $http.post('http://localhost:3000/api/post/', { title: title, content: content });
+#     }
 
-PaginationListView = Backbone.View.extend
-	tagName: 'ul'
-	className: 'pagination pagination-sm'
-	collection: new PaginationList()
+#     function getPost (_id) {
+#         return $http.get('http://localhost:3000/api/post/' + _id);
+#     }
 
-	initialize : (options) ->
- 		@options = options
+#     function putPost (_id, title, content) {
+#         return $http.put('http://localhost:3000/api/post/' + _id, { title: title, content: content });
+#     }
 
-	render: () ->
-		@$el.empty()
-		@collection.reset @calcPagination @options.rowCount
-		@collection.each (model) ->
-			@modelView = new PaginationView model: model
-			@$el.append @modelView.render().el
-		, @
-		return @
+#     function deletePost (_id) {
+#         return $http.delete('http://localhost:3000/api/post/' + _id);
+#     }
 
-	calcPagination: (rowCount) ->
-		pagination = []
-		page = @options.page
-		totalPages = Math.floor rowCount / config.pageSize + 1
+#     return {
+#         postPost: postPost,
+#         getPost: getPost,
+#         putPost: putPost,
+#         deletePost: deletePost
+#     };
+# });
 
-		if page is 1
-			pagination.push text: '<', page: '#', className: 'disabled'
-		else
-			pagination.push text: '<', page: page - 1
+# app.filter('trustAsHtml', function ($sce) {
+#     return function (text) {
+#         return $sce.trustAsHtml(text);
+#     };
+# });
 
-		_.each _.range(page - 4, page + 5), (i) ->
-			if i < page - 2 and totalPages - i <= 4 or i >= page - 2 and i > 0 and pagination.length <= 5
-				if i is page
-					pagination.push text: i, page: i, className: 'active'
-				else
-					pagination.push text: i, page: i
-
-		if page is totalPages
-			pagination.push text: '>', page: '#', className: 'disabled'
-		else
-			pagination.push text: '>', page: page + 1
-		
-		return pagination
-
-PostView = Backbone.View.extend
-	tagName: 'div'
-	className: 'blog-post'
-	template: Handlebars.compile $('#posts-template').html(), noEscape: true
-
-	render: () ->
-		@$el.html @template @model.attributes
-		return @
-
-PostsView = Backbone.View.extend
-	className: 'blog-main'
-
-	render: () ->
-		@$el.empty()
-		@collection.each (model) ->
-			@modelView = new PostView model: model
-			@$el.append @modelView.render().el
-		, @
-		return @
-
-BlogView = Backbone.View.extend
-	el: '#main'
-	fragment: $ document.createDocumentFragment()
-	model: new Blog()
-	subViews:
-		controlsView: new ControlsView()
-		paginationListView: new PaginationListView()
-		postsView: new PostsView()
-
-	initialize: () ->
-        @listenTo @model, 'sync', @render
-
-	render: () ->
-		@subViews.controlsView = new ControlsView()
-		@subViews.paginationListView = new PaginationListView
-			page: @model.get 'page'
-			rowCount: @model.get('pagination').rowCount
-		@subViews.postsView = new PostsView collection: new Posts @model.get 'posts'
-		@subViews.$controls = $ @subViews.controlsView.render().el
-		@subViews.$paginationTop = $ @subViews.paginationListView.render().el
-		@subViews.$posts = $ @subViews.postsView.render().el
-		hljs.highlightBlock e for e in $ 'pre', @subViews.$posts
-		@subViews.$paginationBottom = @subViews.$paginationTop.clone()
-		@fragment.append @subViews.$controls
-		.append @subViews.$paginationTop
-		.append @subViews.$posts
-		.append @subViews.$paginationBottom
-		@$el.html @fragment
-		return @
-
-EditPostView = Backbone.View.extend
-	el: '#main'
-	template: Handlebars.compile $('#edit-post-template').html(), noEscape: true
-	model: new Post()
-	events:
-		'submit .edit-post-form': 'savePost'
-		'click .delete': 'deletePost'
-		'click .editControls button': 'editContent'
-
-	initialize: ->
-	    @listenTo @model, 'sync', @designateAction
-	    @listenTo @model, 'clear', @renderEditPost
-
-	designateAction: (model) ->
-		if @model.get 'action' then @renderEditPost model else router.navigate '', trigger: true
-
-	renderEditPost: (model) ->
-		@$el.html @template if model then @model.attributes else id: null
-
-	savePost: (event) ->
-		event.preventDefault()
-		postData = $ event.currentTarget
-		.serializeObject()
-		if @model.id
-			postData = $.extend
-				id: @model.id
-				postData
-		@model.save postData
-
-	deletePost: (event) ->
-		event.preventDefault()
-		@model.destroy()
-
-	editContent: (event) ->
-		event.preventDefault()
-		role = $ event.currentTarget
-		.closest '[data-role]'
-		.data 'role'
-		if /h1|h2|p|pre/.test role
-			document.execCommand 'formatBlock', false, role
-		else
-			document.execCommand role, false, null
-
-Router = Backbone.Router.extend
-	routes:
-		'': 'home'
-		'page/:page': 'showPage'
-		'addPost': 'addPost'
-		'editPost/:id': 'editPost'
-
-	home: ->
-		blogView.model.set
-			page : 1
-		blogView.model.fetch()
-
-	showPage: (page) ->
-		blogView.model.set
-			page : parseInt page, 10
-		blogView.model.fetch()
-
-	addPost: ->
-		editPostView.model.clear()
-		editPostView.model.trigger 'clear'
-
-	editPost: (id) ->
-		editPostView.model.set
-			_id : id
-		editPostView.model.fetch()
-
-blogView = new BlogView()
-
-editPostView = new EditPostView()
-
-router = new Router()
-
-$ ->
-	init()
-
-init = ->
-	Backbone.history.start()
+# app.directive('contenteditable', function () {
+#     return {
+#         restrict: 'A',
+#         require: '?ngModel',
+#         link: function (scope, element, attrs, ngModel) {
+#             if (!ngModel) return;
+#             ngModel.$render = function () {
+#                 element.html(ngModel.$viewValue || '');
+#             };
+#             element.on('blur keyup change', function () {
+#                 scope.$apply(readViewText);
+#             });
+#             function readViewText() {
+#                 var html = element.html();
+#                 if (attrs.stripBr && html == '<br>') {
+#                     html = '';
+#                 }
+#                 ngModel.$setViewValue(html);
+#             }
+#         }
+#     };
+# });

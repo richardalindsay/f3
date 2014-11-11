@@ -30,6 +30,10 @@
 
   app.set('view engine', 'jade');
 
+  app.get('/partials/:name', function(req, res) {
+    return res.render('partials/' + req.params.name);
+  });
+
   app.use(logger('dev'));
 
   app.use(bodyParser.json());
@@ -52,10 +56,6 @@
   app.use('/blog', blog);
 
   app.use('/api', api);
-
-  app.get('/partials/:name', function (req, res) {
-    res.render('partials/' + req.params.name);
-  });
 
   app.use(function(req, res, next) {
     var err;

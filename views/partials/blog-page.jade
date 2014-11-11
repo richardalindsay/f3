@@ -16,5 +16,5 @@ ul.pagination.pagination-sm
 
 ul.pagination.pagination-sm
 	li(class='{{ pagination.className }}', ng-repeat='pagination in pagination.paginationList')
-		span(ng-if='pagination.className == "disabled" || pagination.className == "active"') {{ pagination.text }}
-		a(ng-if='pagination.className != "disabled" && pagination.className != "active"', href='#/page/{{ pagination.page }}') {{ pagination.text }}
+		span(ng-if='pagination.className') {{ pagination.text }}
+		a(ng-if='!pagination.className', href='#/page/{{ pagination.page }}') {{ pagination.text }}
