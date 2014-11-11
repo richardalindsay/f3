@@ -53,6 +53,10 @@
 
   app.use('/api', api);
 
+  app.get('/partials/:name', function (req, res) {
+    res.render('partials/' + req.params.name);
+  });
+
   app.use(function(req, res, next) {
     var err;
     err = new Error('Not Found');

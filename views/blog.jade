@@ -7,7 +7,8 @@ block title
     title f3
 
 block headerScripts
-        script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.1/angular.min.js')
+        script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js')
+        script(src='//ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular-route.js')
 
 block header
     .blog-masthead
@@ -26,10 +27,7 @@ block main
             p.lead.blog-description the future sound of taipei version 3
         .row
             .col-sm-8.blog-main
-                #main
-                    // include includes/templates/controls
-                    // include includes/templates/pagination
-                    include includes/templates/posts
+                #main(ng-view)
             .col-sm-3.col-sm-offset-1.blog-sidebar
                 .sidebar-module.sidebar-module-inset
                     h4 About

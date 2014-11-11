@@ -1,0 +1,44 @@
+form.edit-post-form.form-horizontal(ng-submit='submit()')
+	legend(ng-if='!form._id') Add Post
+	legend(ng-if='form._id') Edit Post
+	.form-group
+		label.col-sm-1.control-label Title
+		.col-sm-11
+			input.form-control(type='text', name='title', ng-model='form.title', value='{{ form.title }}')
+	.form-group
+		.col-sm-offset-1.col-sm-11
+			.btn-group.editControls
+				button.btn.btn-default(type='button', data-role='pre') &lt;&gt;
+				button.btn.btn-default(type='button', data-role='undo'): span.glyphicon.glyphicon-circle-arrow-left
+				button.btn.btn-default(type='button', data-role='redo'): span.glyphicon.glyphicon-repeat
+				button.btn.btn-default(type='button', data-role='bold'): span.glyphicon.glyphicon-bold
+				button.btn.btn-default(type='button', data-role='italic'): span.glyphicon.glyphicon-italic
+				button.btn.btn-default(type='button', data-role='underline'): u A
+				button.btn.btn-default(type='button', data-role='strikethrough'): strike A
+				button.btn.btn-default(type='button', data-role='justifyLeft'): span.glyphicon.glyphicon-align-left
+				button.btn.btn-default(type='button', data-role='juystifyCenter'): span.glyphicon.glyphicon-align-center
+				button.btn.btn-default(type='button', data-role='justifyRight'): span.glyphicon.glyphicon-align-right
+				button.btn.btn-default(type='button', data-role='justifyFull'): span.glyphicon.glyphicon-align-justify
+				button.btn.btn-default(type='button', data-role='indent'): span.glyphicon.glyphicon-indent-left
+				button.btn.btn-default(type='button', data-role='outdent'): span.glyphicon.glyphicon-indent-right
+				button.btn.btn-default(type='button', data-role='insertUnorderedList'): span.glyphicon.glyphicon-list
+				button.btn.btn-default(type='button', data-role='insertOrderedList') 1
+					span.glyphicon.glyphicon-list
+				button.btn.btn-default(type='button', data-role='h1') h
+					sup 1
+				button.btn.btn-default(type='button', data-role='h2') h
+					sup 2
+				button.btn.btn-default(type='button', data-role='p') p
+				button.btn.btn-default(type='button', data-role='subscript'): sub A
+				button.btn.btn-default(type='button', data-role='superscript'): sup A
+	.form-group
+		label.col-sm-1.control-label Content
+		.col-sm-11
+			.form-control.content-editable-area(name='content', contenteditable='true', ng-model='form.content')
+	.form-group
+		.col-sm-offset-1.col-sm-11
+			button.btn.btn-default.btn-xs(type='submit', ng-if='!form._id') Add
+			button.btn.btn-default.btn-xs(type='submit', ng-if='form._id') Edit
+			| &nbsp;
+			button.btn.btn-danger.btn-xs.delete(type='button', ng-if='form._id', ng-click='deletePost()') delete
+			
