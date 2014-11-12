@@ -110,36 +110,21 @@ f3.factory 'blogService', ['$http', ($http) ->
         pagination = []
         totalPages = Math.floor rowCount / 10 + 1
         if page is 1
-            pagination.push
-                text: '<'
-                page: '#'
-                className: 'disabled'
+            pagination.push text: '<', page: '#', className: 'disabled'
         else
-            pagination.push
-                text: '<'
-                page: page - 1
+            pagination.push text: '<', page: page - 1
 
         for i in [page - 4 .. page + 5]
             if i < page - 2 and totalPages - i <= 4 or i >= page - 2 and i > 0 and pagination.length <= 5
                 if i is page
-                    pagination.push
-                        text: i
-                        page: i
-                        className: 'active'
+                    pagination.push text: i, page: i, className: 'active'
                 else
-                    pagination.push
-                        text: i
-                        page: i
+                    pagination.push text: i, page: i
 
         if page is totalPages
-            pagination.push
-                text: '>'
-                page: '#'
-                className: 'disabled'
+            pagination.push text: '>', page: '#', className: 'disabled'
        	else
-            pagination.push
-                text: '>'
-                page: page + 1
+            pagination.push text: '>', page: page + 1
 
         pagination
 
