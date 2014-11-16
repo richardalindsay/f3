@@ -1,4 +1,4 @@
-f3 = angular.module 'f3', ['ngRoute']
+f3 = angular.module 'f3', ['ngRoute', 'hljs']
 
 f3.config ['$routeProvider', ($routeProvider) ->
     
@@ -21,7 +21,7 @@ f3.config ['$routeProvider', ($routeProvider) ->
 ]
 
 f3.controller 'blogController', ['$scope', 'blogService', '$routeParams', ($scope, blogService, $routeParams) ->
-    
+
     page = parseInt($routeParams.page, 10) or 1
     blogService.getBlog page
     .then (response) ->
@@ -29,6 +29,7 @@ f3.controller 'blogController', ['$scope', 'blogService', '$routeParams', ($scop
         $scope.pagination = {}
         $scope.pagination.paginationList = blogService.calcPagination rowCount, page
         $scope.posts = response.data.data.posts
+
 ]
 
 f3.controller 'editPostController', ['$scope', 'pageService', '$routeParams', '$location', ($scope, pageService, $routeParams, $location) ->
@@ -83,6 +84,7 @@ f3.controller 'editPostController', ['$scope', 'pageService', '$routeParams', '$
     ]
 
     $scope.submit = ->
+        $scope.form.content = $scope.prepareHighlight $scope.form.content
         if $scope.form._id
             pageService.putPost $scope.form._id, $scope.form.title, $scope.form.content
             .then ->
@@ -102,6 +104,15 @@ f3.controller 'editPostController', ['$scope', 'pageService', '$routeParams', '$
             document.execCommand 'formatBlock', false, role
         else
             document.execCommand role, false, null
+
+    $scope.prepareHighlight = (text) ->
+        if /<pre>/.test text
+            text = text
+            .replace /<pre>/g, '<div hljs no-escape>'
+            .replace /<\/pre>/g, '</div>'
+            .replace /<br>/g, '\n'
+        text
+
 ]
 
 f3.factory 'blogService', ['$http', ($http) ->
@@ -175,3 +186,11 @@ f3.directive 'contenteditable', () ->
             if attrs.stripBr and html is '<br>'
                 html = ''
             ngModel.$setViewValue html
+
+f3.directive 'dynamic', ($compile) ->
+    restrict: 'A'
+    replace: true
+    link: (scope, ele, attrs) ->
+        scope.$watch attrs.dynamic, (html) ->
+            ele.html html
+            $compile(ele.contents())(scope)

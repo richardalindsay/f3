@@ -11,7 +11,7 @@ ul.pagination.pagination-sm
 		h2.blog-post-title(ng-bind-html='post.title | trustAsHtml')
 		p.blog-post-meta {{ post.date }} by 
 			a fsot
-		div.blog-post-content(ng-bind-html='post.content | trustAsHtml')
+		div.blog-post-content(dynamic='post.content')
 		a.btn.btn-default.btn-xs(href='#/editPost/{{ post._id }}') edit
 
 ul.pagination.pagination-sm

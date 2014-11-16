@@ -2,7 +2,7 @@
 (function() {
   var f3;
 
-  f3 = angular.module('f3', ['ngRoute']);
+  f3 = angular.module('f3', ['ngRoute', 'hljs']);
 
   f3.config([
     '$routeProvider', function($routeProvider) {
@@ -109,6 +109,7 @@
         }
       ];
       $scope.submit = function() {
+        $scope.form.content = $scope.prepareHighlight($scope.form.content);
         if ($scope.form._id) {
           return pageService.putPost($scope.form._id, $scope.form.title, $scope.form.content).then(function() {
             return $location.path('/');
@@ -124,12 +125,18 @@
           return $location.path('/');
         });
       };
-      return $scope.formatText = function(role) {
+      $scope.formatText = function(role) {
         if (/h1|h2|p|pre/.test(role)) {
           return document.execCommand('formatBlock', false, role);
         } else {
           return document.execCommand(role, false, null);
         }
+      };
+      return $scope.prepareHighlight = function(text) {
+        if (/<pre>/.test(text)) {
+          text = text.replace(/<pre>/g, '<div hljs no-escape>').replace(/<\/pre>/g, '</div>').replace(/<br>/g, '\n');
+        }
+        return text;
       };
     }
   ]);
@@ -256,6 +263,19 @@
           }
           return ngModel.$setViewValue(html);
         };
+      }
+    };
+  });
+
+  f3.directive('dynamic', function($compile) {
+    return {
+      restrict: 'A',
+      replace: true,
+      link: function(scope, ele, attrs) {
+        return scope.$watch(attrs.dynamic, function(html) {
+          ele.html(html);
+          return $compile(ele.contents())(scope);
+        });
       }
     };
   });

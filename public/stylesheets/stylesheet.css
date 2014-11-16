@@ -4,3 +4,6 @@
 
 .content-editable-area {
   height: 100%; }
+
+[hljs] pre {
+  padding: 0; }
