@@ -1,6 +1,5 @@
 form.edit-post-form.form-horizontal(ng-submit='submit()')
-	legend(ng-if='!form._id') Add Post
-	legend(ng-if='form._id') Edit Post
+	legend {{ form.header }} Post
 	.form-group
 		label.col-sm-1.control-label Title
 		.col-sm-11
@@ -31,17 +30,12 @@ form.edit-post-form.form-horizontal(ng-submit='submit()')
 	.form-group
 		.col-sm-offset-1.col-sm-11
 			button.btn.btn-default.btn-xs(
-				type='submit', 
-				ng-if='!form._id'
-			) Add
-			button.btn.btn-default.btn-xs(
-				type='submit', 
-				ng-if='form._id'
-			) Edit
+				type='submit'
+			) {{ form.header }}
 			| &nbsp;
 			button.btn.btn-danger.btn-xs.delete(
 				type='button', 
-				ng-if='form._id', 
+				ng-show='form._id', 
 				ng-click='deletePost()'
 			) delete
 			

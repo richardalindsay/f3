@@ -23,16 +23,21 @@
   ]);
 
   f3.controller('blogController', [
-    '$scope', 'blogService', '$routeParams', function($scope, blogService, $routeParams) {
+    '$scope', 'blogService', '$routeParams', '$location', function($scope, blogService, $routeParams, $location) {
       var page;
       page = parseInt($routeParams.page, 10) || 1;
-      return blogService.getBlog(page).then(function(response) {
+      blogService.getBlog(page).then(function(response) {
         var rowCount;
         rowCount = response.data.data.pagination.rowCount;
         $scope.pagination = {};
         $scope.pagination.paginationList = blogService.calcPagination(rowCount, page);
         return $scope.posts = response.data.data.posts;
       });
+      return $scope.goPage = function(page) {
+        if (page) {
+          return $location.path('page/' + page);
+        }
+      };
     }
   ]);
 
@@ -40,10 +45,12 @@
     '$scope', 'pageService', '$routeParams', '$location', function($scope, pageService, $routeParams, $location) {
       if ($routeParams._id) {
         pageService.getPost($routeParams._id).then(function(response) {
-          return $scope.form = response.data;
+          $scope.form = response.data;
+          return $scope.form.header = 'Edit';
         });
       } else {
         $scope.form = {};
+        $scope.form.header = 'Add';
       }
       $scope.editControls = [
         {
@@ -151,13 +158,12 @@
         if (page === 1) {
           pagination.push({
             text: '<',
-            page: '#',
             className: 'disabled'
           });
         } else {
           pagination.push({
             text: '<',
-            page: page - 1
+            link: page - 1
           });
         }
         for (i = _i = _ref = page - 4, _ref1 = page + 5; _ref <= _ref1 ? _i <= _ref1 : _i >= _ref1; i = _ref <= _ref1 ? ++_i : --_i) {
@@ -165,13 +171,12 @@
             if (i === page) {
               pagination.push({
                 text: i,
-                page: i,
                 className: 'active'
               });
             } else {
               pagination.push({
                 text: i,
-                page: i
+                link: i
               });
             }
           }
@@ -179,13 +184,12 @@
         if (page === totalPages) {
           pagination.push({
             text: '>',
-            page: '#',
             className: 'disabled'
           });
         } else {
           pagination.push({
             text: '>',
-            page: page + 1
+            link: page + 1
           });
         }
         return pagination;

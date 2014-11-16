@@ -20,7 +20,7 @@ f3.config ['$routeProvider', ($routeProvider) ->
         controller  : 'editPostController'
 ]
 
-f3.controller 'blogController', ['$scope', 'blogService', '$routeParams', ($scope, blogService, $routeParams) ->
+f3.controller 'blogController', ['$scope', 'blogService', '$routeParams', '$location', ($scope, blogService, $routeParams, $location) ->
 
     page = parseInt($routeParams.page, 10) or 1
     blogService.getBlog page
@@ -30,6 +30,8 @@ f3.controller 'blogController', ['$scope', 'blogService', '$routeParams', ($scop
         $scope.pagination.paginationList = blogService.calcPagination rowCount, page
         $scope.posts = response.data.data.posts
 
+    $scope.goPage = (page) ->
+        if page then $location.path 'page/' + page
 ]
 
 f3.controller 'editPostController', ['$scope', 'pageService', '$routeParams', '$location', ($scope, pageService, $routeParams, $location) ->
@@ -38,8 +40,10 @@ f3.controller 'editPostController', ['$scope', 'pageService', '$routeParams', '$
         pageService.getPost $routeParams._id
         .then (response) ->
             $scope.form = response.data
+            $scope.form.header = 'Edit'
     else
         $scope.form = {}
+        $scope.form.header = 'Add'
 
     $scope.editControls = [
         role: 'pre', content: '&lt;&gt'
@@ -121,21 +125,21 @@ f3.factory 'blogService', ['$http', ($http) ->
         pagination = []
         totalPages = Math.floor rowCount / 10 + 1
         if page is 1
-            pagination.push text: '<', page: '#', className: 'disabled'
+            pagination.push text: '<', className: 'disabled'
         else
-            pagination.push text: '<', page: page - 1
+            pagination.push text: '<', link: page - 1
 
         for i in [page - 4 .. page + 5]
             if i < page - 2 and totalPages - i <= 4 or i >= page - 2 and i > 0 and pagination.length <= 5
                 if i is page
-                    pagination.push text: i, page: i, className: 'active'
+                    pagination.push text: i, className: 'active'
                 else
-                    pagination.push text: i, page: i
+                    pagination.push text: i, link: i
 
         if page is totalPages
-            pagination.push text: '>', page: '#', className: 'disabled'
+            pagination.push text: '>', className: 'disabled'
        	else
-            pagination.push text: '>', page: page + 1
+            pagination.push text: '>', link: page + 1
 
         pagination
 
