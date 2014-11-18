@@ -45,6 +45,7 @@
     '$scope', 'pageService', '$routeParams', '$location', function($scope, pageService, $routeParams, $location) {
       if ($routeParams._id) {
         pageService.getPost($routeParams._id).then(function(response) {
+          console.log(response.data);
           $scope.form = response.data;
           return $scope.form.header = 'Edit';
         });
@@ -140,8 +141,13 @@
         }
       };
       return $scope.prepareHighlight = function(text) {
+        var regEx1, regEx2;
         if (/<pre>/.test(text)) {
-          text = text.replace(/<pre>/g, '<div hljs no-escape>').replace(/<\/pre>/g, '</div>').replace(/<br>/g, '\n');
+          regEx1 = /<pre>(.*?)<\/pre>/g;
+          regEx2 = /<br>/g;
+          text = text.replace(regEx1, function(a) {
+            return a.replace(regEx2, '\n');
+          }).replace(/<pre>/g, '<div hljs no-escape><pre>').replace(/<\/pre>/g, '<\/pre><\/div>');
         }
         return text;
       };

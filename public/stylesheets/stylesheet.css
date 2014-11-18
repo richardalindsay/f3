@@ -5,8 +5,8 @@
 .content-editable-area {
   height: 100%; }
 
-[hljs] pre {
-  padding: 0; }
+.blog-post pre {
+  padding: 0px; }
 
 .pagination a {
   cursor: pointer; }

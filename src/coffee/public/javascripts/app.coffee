@@ -39,6 +39,7 @@ f3.controller 'editPostController', ['$scope', 'pageService', '$routeParams', '$
     if $routeParams._id
         pageService.getPost $routeParams._id
         .then (response) ->
+            console.log response.data
             $scope.form = response.data
             $scope.form.header = 'Edit'
     else
@@ -111,10 +112,13 @@ f3.controller 'editPostController', ['$scope', 'pageService', '$routeParams', '$
 
     $scope.prepareHighlight = (text) ->
         if /<pre>/.test text
+            regEx1 = /<pre>(.*?)<\/pre>/g
+            regEx2 = /<br>/g
             text = text
-            .replace /<pre>/g, '<div hljs no-escape>'
-            .replace /<\/pre>/g, '</div>'
-            .replace /<br>/g, '\n'
+            .replace regEx1, (a) -> 
+                a.replace regEx2, '\n'
+            .replace /<pre>/g, '<div hljs no-escape><pre>'
+            .replace /<\/pre>/g, '<\/pre><\/div>'
         text
 
 ]
