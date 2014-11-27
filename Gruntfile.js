@@ -81,14 +81,18 @@ module.exports = function(grunt) {
 		clean: {
   			js: ["public/dist/*.js", "!public/dist/*.min.js"],
   			css: ["public/dist/*.css", "!public/dist/*.min.css"]
-		}
+		},
+		nodemon: {
+  			dev: {
+    			script: './bin/www'
+  			}
+		},
+		concurrent: {
+        	target: ['nodemon', 'watch'],
+        	options: {
+                logConcurrentOutput: true
+            }
+    	}
 	});
-	grunt.registerTask('default', ['server', 'watch']);
-	grunt.registerTask('server', 'Start a custom web server.', function() {
-		var app = require('./app.js');
-		app.set('port', process.env.PORT || 3000);
-		var server = app.listen(3000, function() {
-			grunt.log.writeln('Express server listening on port ' + server.address().port);
-		});
-	});
+	grunt.registerTask('default', 'concurrent')
 };
