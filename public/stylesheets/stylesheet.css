@@ -10,3 +10,6 @@
 
 .pagination a {
   cursor: pointer; }
+
+.hljs {
+  font-family: Menlo, Consolas, "Courier New", monospace; }

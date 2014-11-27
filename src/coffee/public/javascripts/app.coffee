@@ -39,7 +39,6 @@ f3.controller 'editPostController', ['$scope', 'pageService', '$routeParams', '$
     if $routeParams._id
         pageService.getPost $routeParams._id
         .then (response) ->
-            console.log response.data
             $scope.form = response.data
             $scope.form.header = 'Edit'
     else
@@ -101,7 +100,7 @@ f3.controller 'editPostController', ['$scope', 'pageService', '$routeParams', '$
 
     $scope.deletePost = ->
         pageService.deletePost $scope.form._id
-        .then () ->
+        .then ->
            $location.path '/' 
 
     $scope.formatText = (role) ->
@@ -180,14 +179,14 @@ f3.filter 'trustAsHtml', ['$sce', ($sce) ->
         $sce.trustAsHtml text
 ]
 
-f3.directive 'contenteditable', () ->
+f3.directive 'contenteditable', ->
     restrict: 'A'
     require: '?ngModel'
     link: (scope, element, attrs, ngModel) ->
         if not ngModel then return
-        ngModel.$render = () ->
+        ngModel.$render = ->
             element.html ngModel.$viewValue or ''
-        element.on 'blur keyup change', () ->
+        element.on 'blur keyup change', ->
             scope.$apply readViewText
         readViewText = ->
             html = element.html()
@@ -195,10 +194,11 @@ f3.directive 'contenteditable', () ->
                 html = ''
             ngModel.$setViewValue html
 
-f3.directive 'dynamic', ($compile) ->
+f3.directive 'dynamic', ['$compile', ($compile) ->
     restrict: 'A'
     replace: true
     link: (scope, ele, attrs) ->
         scope.$watch attrs.dynamic, (html) ->
             ele.html html
             $compile(ele.contents())(scope)
+]
