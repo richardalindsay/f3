@@ -7,15 +7,15 @@ module.exports = (grunt) ->
                 livereload: true
             coffeeFrontend:
                 files: 'src/coffee/public/javascripts/**/*.coffee'
-                tasks: ['coffee:frontend', 'concat:js', 'uglify', 'clean:js']
+                tasks: ['newer:coffee:frontend', 'concat:js', 'uglify', 'clean:js']
             coffeeBackend:
                 options:
                     livereload: false
                 files: ['src/coffee/**/*.coffee', '!src/coffee/public/javascripts/**']
-                tasks: 'coffee:backend'
+                tasks: 'newer:coffee:backend'
             sass:
                 files: 'src/sass/**/*.sass'
-                tasks: ['sass', 'concat:css', 'cssmin', 'clean:css']
+                tasks: ['newer:sass', 'concat:css', 'cssmin', 'clean:css']
             jade:
                 files: 'views/**/*.jade'
         coffee:
