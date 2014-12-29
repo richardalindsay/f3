@@ -148,7 +148,7 @@ f3.factory 'blogService', ['$http', ($http) ->
 
     getBlog = (page) ->
        	offset = (page - 1) * 10;
-        $http.get 'http://localhost:3000/api/blog/10/' + offset
+        $http.get '/api/blog/10/' + offset
 
     getBlog: getBlog
     calcPagination: calcPagination
@@ -157,16 +157,16 @@ f3.factory 'blogService', ['$http', ($http) ->
 f3.factory 'pageService', ['$http', ($http) ->
 
     postPost = (title, content) ->
-        $http.post 'http://localhost:3000/api/post/', title: title, content: content
+        $http.post '/api/post/', title: title, content: content
 
     getPost = (_id) ->
-        $http.get 'http://localhost:3000/api/post/' + _id
+        $http.get '/api/post/' + _id
 
     putPost = (_id, title, content) ->
-        $http.put 'http://localhost:3000/api/post/' + _id, title: title, content: content
+        $http.put '/api/post/' + _id, title: title, content: content
 
     deletePost = (_id) ->
-        $http.delete 'http://localhost:3000/api/post/' + _id
+        $http.delete '/api/post/' + _id
 
     postPost: postPost
     getPost: getPost

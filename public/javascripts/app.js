@@ -201,7 +201,7 @@
       getBlog = function(page) {
         var offset;
         offset = (page - 1) * 10;
-        return $http.get('http://localhost:3000/api/blog/10/' + offset);
+        return $http.get('/api/blog/10/' + offset);
       };
       return {
         getBlog: getBlog,
@@ -214,22 +214,22 @@
     '$http', function($http) {
       var deletePost, getPost, postPost, putPost;
       postPost = function(title, content) {
-        return $http.post('http://localhost:3000/api/post/', {
+        return $http.post('/api/post/', {
           title: title,
           content: content
         });
       };
       getPost = function(_id) {
-        return $http.get('http://localhost:3000/api/post/' + _id);
+        return $http.get('/api/post/' + _id);
       };
       putPost = function(_id, title, content) {
-        return $http.put('http://localhost:3000/api/post/' + _id, {
+        return $http.put('/api/post/' + _id, {
           title: title,
           content: content
         });
       };
       deletePost = function(_id) {
-        return $http["delete"]('http://localhost:3000/api/post/' + _id);
+        return $http["delete"]('/api/post/' + _id);
       };
       return {
         postPost: postPost,
