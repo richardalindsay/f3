@@ -25,4 +25,4 @@ Start Grunt
 
 Browse to:
 
-<http://localhost:3000/blog>
+<http://localhost:3000>
