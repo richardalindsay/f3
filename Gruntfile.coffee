@@ -6,7 +6,7 @@ module.exports = (grunt) ->
             options:
                 livereload: true
             coffeeFrontend:
-                files: 'src/coffee/public/javascripts/**/*.coffee'
+                files: ['src/coffee/public/javascripts/**/*.coffee', 'src/coffee/vendors/javascripts/**/*.js']
                 tasks: ['newer:coffee:frontend', 'concat:js', 'uglify', 'clean:js']
             coffeeBackend:
                 options:
@@ -35,10 +35,10 @@ module.exports = (grunt) ->
             js:
                 options:
                     separator: ';'
-                src: 'public/javascripts/**/*.js'
+                src: ['vendors/javascripts/angular.js', 'vendors/javascripts/angular-route.js', 'vendors/javascripts/angular-highlightjs.js', 'vendors/javascripts/highlight.js', 'public/javascripts/**/*.js']
                 dest: 'public/dist/app.js'
             css:
-                src: 'public/stylesheets/**/*.css'
+                src: ['vendors/stylesheets/**/*.css', 'public/stylesheets/**/*.css']
                 dest: 'public/dist/app.css'
         uglify:
             dist:
