@@ -5,13 +5,17 @@ ul.pagination.pagination-sm
 	li(class='{{ pagination.className }}', ng-repeat='pagination in pagination.paginationList')
 		a(ng-click="goPage(pagination.link)") {{ pagination.text }}
 
-.blog-main
-	.blog-post(ng-repeat='post in posts')
-		h2.blog-post-title(ng-bind-html='post.title | trustAsHtml')
-		p.blog-post-meta {{ post.date }} by 
-			a fsot
-		div.blog-post-content(dynamic='post.content')
+
+.blog-post(ng-repeat='post in posts')
+	.post-preview
+		a(href='#')
+			h2.post-title(ng-bind-html='post.title | trustAsHtml')
+			h3.post-subtitle(dynamic='post.content')
+		p.post-meta Posted by 
+			a(href='#') fsot 
+			| on {{ post.date }}
 		a.btn.btn-default.btn-xs(href='#/editPost/{{ post._id }}') edit
+	hr
 
 ul.pagination.pagination-sm
 	li(class='{{ pagination.className }}', ng-repeat='pagination in pagination.paginationList')

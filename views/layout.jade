@@ -1,20 +1,30 @@
 doctype html
 html(lang='en')
-	head
-		meta(charset='utf-8')
-		meta(http-equiv='X-UA-Compatible', content='IE=edge')
-		meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
-		link(rel='stylesheet', href='dist/app.min.css')
+    head
+        meta(charset='utf-8')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
+        meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
+        link(rel='stylesheet', href='dist/app.min.css')
+        
+        link(rel='stylesheet', href='dist/clean-blog.css')
+        link(rel='stylesheet', href='http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css')
+        link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic')
+        link(rel='stylesheet', href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800')
 
-		block title
+        block title
 
-	body(ng-app='f3')
+    body(ng-app='f3')
 
-		block header
-		
-		block main
+        block navbar
 
-		block footer
+        block header
+        
+        block main
 
-		script(src='dist/app.min.js')
-		script(src='http://localhost:35729/livereload.js')
+        block footer
+
+        script(src='dist/app.min.js')
+        script(src='dist/jquery.js')
+        script(src='dist/bootstrap.js')
+        script(src='dist/clean-blog.js')
+        script(src='http://localhost:35729/livereload.js')
