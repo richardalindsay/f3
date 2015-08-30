@@ -58,8 +58,8 @@ module.exports = (grunt) ->
                 src: 'public/dist/app.css'
                 dest: 'public/dist/app.min.css'
         clean:
-            js: ["public/dist/*.js", "!public/dist/*.min.js"]
-            css: ["public/dist/*.css", "!public/dist/*.min.css"]
+            js: ["public/dist/*.js", "!public/dist/*.min.js", "public/javascripts"]
+            css: ["public/dist/*.css", "!public/dist/*.min.css", "public/stylesheets"]
         nodemon:
             dev:
                 script: './bin/www'
